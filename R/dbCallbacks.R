@@ -29,9 +29,9 @@ insertCallback <- function(input, output, session, ids, db, tab) {
                     input[[x]]
                   }
                 })
-  new <- setNames(new, ids)
+  new <- stats::setNames(new, ids)
   new <- as.data.frame(new)
 
   # inserts new entry into database
-  dbWriteTable(db, tab, new, append = TRUE)
+  DBI::dbWriteTable(db, tab, new, append = TRUE)
 }
