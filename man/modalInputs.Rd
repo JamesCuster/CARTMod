@@ -2,10 +2,30 @@
 % Please edit documentation in R/addEditModules.R
 \name{modalInputs}
 \alias{modalInputs}
-\title{Hello}
+\title{Create list of shiny inputs for modal}
 \usage{
-modalInputs(ids, labels, type, values, df, choices, session)
+modalInputs(session, inputData, values, choices)
+}
+\arguments{
+\item{session}{The \code{session} object passed to function given to
+shinyServer. This should usually be \code{session = session}.}
+
+\item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
+type} which correspond to the field names of the table in the database,
+lables for the input in the shiny UI, and the type of shiny input to be
+used.}
+
+\item{values}{Optional argument to be used when the inputs are being
+populated from an observation in the database. (NEED MORE DOCUMENTATION
+HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)}
+
+\item{choices}{Optional argument to provide the choices for
+\code{\link[shiny]{selectInput}} and \code{\link[shiny]{selectizeInput}}
+inputs. NEED TO VERIFY THAT THIS WORKS. FOR THE EXAMPLE i USED TO DEVELOP
+THIS i DID NOT HAVE A SELECT INPUT}
 }
 \description{
-Hello
+Takes a \code{data.frame} containing information about shiny inputs and
+additional optional parameters to create list of shiny inputs to be displayed
+in a modal
 }

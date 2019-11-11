@@ -7,25 +7,26 @@
 addModule(input, output, session, modalTitle, inputData, db, dbTable)
 }
 \arguments{
-\item{input, output, session}{These parameters are handled by \code{\link[shiny]{callModule}}
-and can be ignored.}
+\item{input, output, session}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
 
 \item{modalTitle}{Character string for title to be displayed at the top of
 the modal.}
 
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
-type} which correspond to the field names of the table in the database, lables to display for the input
-in the shiny UI, and the type of shiny input to be used.}
+type} which correspond to the field names of the table in the database,
+lables for the input in the shiny UI, and the type of shiny input to be
+used.}
 
-\item{db}{a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as returned by
-\code{\link[DBI]{dbConnect}}. In other words, the object the database connection
-is saved to.}
+\item{db}{a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
+returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
+database connection is saved to.}
 
 \item{dbTable}{The database table the new data will be added to.}
 }
 \value{
-Shiny \code{\link[shiny]{observeEvent}}'s which control actions when the
-add button is pressed, as well as the save button in the modal.
+Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
+  the add button is pressed, as well as the save button in the modal.
 }
 \description{
 This function and \link{addModuleUI} are used in conjection to add the UI and

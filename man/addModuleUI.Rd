@@ -10,12 +10,12 @@ addModuleUI(id)
 \item{id}{character name for the namespace of the module}
 }
 \value{
-A shiny \code{\link[shiny]{actionButton}} which opens a modal to allow user to
-  input data to be added to a database
+A shiny \code{\link[shiny]{actionButton}} which opens a modal to
+  allow user to input data to be added to a database
 }
 \description{
-This function and \code{\link{addModule}} are used in conjunction to add the UI and
-server elements necessary to add a row to a given table in a database
+This function and \code{\link{addModule}} are used in conjunction to add the
+UI and server elements necessary to add a row to a given table in a database
 }
 \examples{
 library(shiny)
