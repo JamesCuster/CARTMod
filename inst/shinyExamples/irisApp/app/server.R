@@ -19,7 +19,7 @@ shinyServer(function(input, output) {
                  "textInput",
                  "textInput",
                  "textInput",
-                 "textInput"),
+                 "selectizeInput"),
         stringsAsFactors = FALSE
     )
 
@@ -28,4 +28,20 @@ shinyServer(function(input, output) {
                inputData = irisInputs,
                db = testdb,
                dbTable = "iris")
+
+
+
+    # Flowers -----------------------------------------------------------------
+    flowerInputs <- data.frame(
+        ids = c("flowerID", "flowerName"),
+        labels = c("flowerID", "Flower Name"),
+        type = c("skip", "textInput"),
+        stringsAsFactors = FALSE
+    )
+
+    callModule(addModule, "flowers",
+               modalTitle = "Add Flower",
+               inputData = flowerInputs,
+               db = testdb,
+               dbTable = "flowers")
 })
