@@ -126,14 +126,14 @@ modalInputs <- function(session, inputData, values, choices) {
         else if (x["type"] == "selectizeInput") {
           shiny::selectizeInput(inputId  = session$ns(x["ids"]),
                          label = x["labels"],
-                         choices = c("", choices[[ids[[i]]]]),
+                         choices = c("", choices[[x["ids"]]]),
                          selected = value,
                          width = 400)
         }
         else if (x["type"] == "selectInput") {
           shiny::selectInput(inputId  = session$ns(x["ids"]),
                       label = x["labels"],
-                      choices = c("", choices[[ids[[i]]]]),
+                      choices = c("", choices[[x["ids"]]]),
                       width = 400)
         }
         else if (x["type"] == "textAreaInput") {
