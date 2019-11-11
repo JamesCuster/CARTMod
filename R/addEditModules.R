@@ -66,10 +66,8 @@ addModule <- function(input, output, session, modalTitle, inputData, db, dbTable
       shiny::modalDialog(
         title = modalTitle,
         modalInputs(
-          inputData$ids,
-          inputData$labels,
-          inputData$type,
-          session = session
+          session = session,
+          inputData = inputData
         ),
         footer =
           list(
@@ -102,7 +100,7 @@ addModule <- function(input, output, session, modalTitle, inputData, db, dbTable
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
 #'   HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)
 #' @param choices Optional argument to provide the choices for
-#'   \code{\link[shiny]{selectInput}} and \code{\link[shiny]{selectizeInput}}
+#'   \code{\link[shiny]{selectInput}} and \code{\link[shiny:selectInput]{selectizeInput}}
 #'   inputs. NEED TO VERIFY THAT THIS WORKS. FOR THE EXAMPLE i USED TO DEVELOP
 #'   THIS i DID NOT HAVE A SELECT INPUT
 #'
