@@ -11,16 +11,18 @@
 #' @seealso \code{\link{addModule}}
 #'
 #' @examples
-#' library(shiny)
-#' ui <- fluidPage(
-#'   addModuleUI("data")
-#' )
+#' if (interactive()) {
+#'   library(shiny)
+#'   ui <- fluidPage(
+#'     addModuleUI("data")
+#'   )
 #'
-#' server <- function(input, output, session) {
+#'   server <- function(input, output, session) {
 #'
+#'   }
+#'
+#'   shinyApp(ui, server)
 #' }
-#'
-#' shinyApp(ui, server)
 #'
 #' @export
 addModuleUI <- function(id) {
@@ -115,39 +117,39 @@ modalInputs <- function(session, inputData, values, choices) {
           NULL
         }
         else if (x["type"] == "textInput") {
-          textInput(inputId  = session$ns(x["ids"]),
+          shiny::textInput(inputId  = session$ns(x["ids"]),
                     label = x["labels"],
                     value = value,
                     width = 400)
         }
         else if (x["type"] == "selectizeInput") {
-          selectizeInput(inputId  = session$ns(x["ids"]),
+          shiny::selectizeInput(inputId  = session$ns(x["ids"]),
                          label = x["labels"],
                          choices = c("", choices[[ids[[i]]]]),
                          selected = value,
                          width = 400)
         }
         else if (x["type"] == "selectInput") {
-          selectInput(inputId  = session$ns(x["ids"]),
+          shiny::selectInput(inputId  = session$ns(x["ids"]),
                       label = x["labels"],
                       choices = c("", choices[[ids[[i]]]]),
                       width = 400)
         }
         else if (x["type"] == "textAreaInput") {
-          textAreaInput(inputId  = session$ns(x["ids"]),
+          shiny::textAreaInput(inputId  = session$ns(x["ids"]),
                         label = x["labels"],
                         value = value,
                         width = "400px",
                         height = "102px")
         }
         else if (x["type"] == "dateInput") {
-          dateInput(inputId  = session$ns(x["ids"]),
+          shiny::dateInput(inputId  = session$ns(x["ids"]),
                     label = x["labels"],
                     value = value,
                     width = 400)
         }
         else if (x["type"] == "actionButton") {
-          actionButton(inputId  = session$ns(x["ids"]),
+          shiny::actionButton(inputId  = session$ns(x["ids"]),
                        label = x["labels"],
                        style = "margin-left: 20px; margin-top: 24px; height: 34px;")
         }

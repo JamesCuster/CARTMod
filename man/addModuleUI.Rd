@@ -18,16 +18,18 @@ This function and \code{\link{addModule}} are used in conjunction to add the
 UI and server elements necessary to add a row to a given table in a database
 }
 \examples{
-library(shiny)
-ui <- fluidPage(
-  addModuleUI("data")
-)
+if (interactive()) {
+  library(shiny)
+  ui <- fluidPage(
+    addModuleUI("data")
+  )
 
-server <- function(input, output, session) {
+  server <- function(input, output, session) {
 
+  }
+
+  shinyApp(ui, server)
 }
-
-shinyApp(ui, server)
 
 }
 \seealso{

@@ -3,3 +3,4 @@
 export(addModule)
 export(addModuleUI)
 export(modalInputs)
+export(runExample)
