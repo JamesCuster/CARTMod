@@ -10,8 +10,34 @@
 library(shiny)
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
-  # iris --------------------------------------------------------------------
+shinyServer(function(input, output, session) {
+    # 1.1 Monitor Database ------------------------------------------------------
+    monitorDatabase <-
+        reactivePoll(
+            intervalMillis = 1000,
+            session,
+            checkFunc = function() {
+                modifiedCurrent <- tbl(irisdb, "modified") %>%
+                    collect() %>%
+                    as.data.frame(stringsAsfactors = FALSE)
+                if (as.POSIXct(modified$modified) < as.POSIXct(modifiedCurrent$modified)) {
+                    modified <<- modifiedCurrent
+                    return(TRUE)
+                } else {
+                    return(FALSE)
+                }
+            },
+            valueFunc = function() {
+                loadDatabase(tables = modified$tableName)
+            }
+        )
+
+    # observe which applies the monitorDatabase reactive
+    observe({
+        monitorDatabase()
+    })
+
+    # iris --------------------------------------------------------------------
     irisInputs <- data.frame(
         ids = names(iris),
         labels = gsub("\\.", " ", names(iris)),
@@ -35,7 +61,6 @@ shinyServer(function(input, output) {
                           modalTitle, inputData, db, dbTable) {
         # Reactive which gathers the choices for the select and selectize inputs
         choicesReactive <- reactive({
-            browser()
             choices <-
                 apply(
                     inputData, 1,
@@ -56,7 +81,6 @@ shinyServer(function(input, output) {
 
         # controls what happens when add is pressed
         shiny::observeEvent(input$add, {
-            browser()
             choices <- choicesReactive()
             shiny::showModal(
                 shiny::modalDialog(
@@ -91,7 +115,7 @@ shinyServer(function(input, output) {
     callModule(addModule, "iris",
                modalTitle = "Add Iris",
                inputData = irisInputs,
-               db = testdb,
+               db = irisdb,
                dbTable = "iris")
 
 
@@ -107,6 +131,6 @@ shinyServer(function(input, output) {
     callModule(addModule, "flowers",
                modalTitle = "Add Flower",
                inputData = flowerInputs,
-               db = testdb,
+               db = irisdb,
                dbTable = "flowers")
 })

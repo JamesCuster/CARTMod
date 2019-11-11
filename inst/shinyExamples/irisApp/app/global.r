@@ -6,14 +6,14 @@ library(CARTMod)
 # Connect to database
 dbPath <- system.file("shinyExamples", "irisApp", "iris.sqlite",
                       package = "CARTMod")
-testdb <- dbConnect(dbDriver("SQLite"), dbPath)
+irisdb <- dbConnect(dbDriver("SQLite"), dbPath)
 
 # Create reactive to store db tables
 reactiveData <- reactiveValues()
 
 
 # Function that loads db tables and stores in irisReactive
-loadData <- function(db, tables = c("iris", "flowers", "modified")) {
+loadDatabase <- function(db, tables = c("iris", "flowers", "modified")) {
   if ("iris" %in% tables) {
     reactiveData$iris <- tbl(db, "iris") %>%
       collect() %>%
@@ -31,7 +31,7 @@ loadData <- function(db, tables = c("iris", "flowers", "modified")) {
   }
 }
 
-loadData(testdb)
+loadDatabase(irisdb)
 
 
 
