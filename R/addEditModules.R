@@ -59,7 +59,8 @@ addModuleUI <- function(id) {
 #' @seealso \code{\link{addModuleUI}}
 #'
 #' @export
-addModule <- function(input, output, session, modalTitle, inputData, db, dbTable) {
+addModule <- function(input, output, session,
+                      modalTitle, inputData, db, dbTable) {
   # controls what happens when add is pressed
   shiny::observeEvent(input$add, {
     shiny::showModal(
@@ -100,9 +101,10 @@ addModule <- function(input, output, session, modalTitle, inputData, db, dbTable
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
 #'   HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)
 #' @param choices Optional argument to provide the choices for
-#'   \code{\link[shiny]{selectInput}} and \code{\link[shiny:selectInput]{selectizeInput}}
-#'   inputs. NEED TO VERIFY THAT THIS WORKS. FOR THE EXAMPLE i USED TO DEVELOP
-#'   THIS i DID NOT HAVE A SELECT INPUT
+#'   \code{\link[shiny]{selectInput}} and
+#'   \code{\link[shiny:selectInput]{selectizeInput}} inputs. NEED TO VERIFY THAT
+#'   THIS WORKS. FOR THE EXAMPLE i USED TO DEVELOP THIS i DID NOT HAVE A SELECT
+#'   INPUT
 #'
 #' @export
 modalInputs <- function(session, inputData, values, choices) {
@@ -110,7 +112,8 @@ modalInputs <- function(session, inputData, values, choices) {
     apply(
       inputData, 1,
       function(x, values) {
-        value <- ifelse(missing(values) || is.na(values[x["ids"]]), "", values[x["ids"]])
+        value <- ifelse(missing(values) || is.na(values[x["ids"]]),
+                        "", values[x["ids"]])
         if (x["type"] == "skip") {
           NULL
         }
@@ -149,10 +152,11 @@ modalInputs <- function(session, inputData, values, choices) {
         else if (x["type"] == "actionButton") {
           shiny::actionButton(inputId  = session$ns(x["ids"]),
                        label = x["labels"],
-                       style = "margin-left: 20px; margin-top: 24px; height: 34px;")
+                       style = "margin-left: 20px;
+                                margin-top: 24px;
+                                height: 34px;")
         }
       }
     )
   fields
 }
-

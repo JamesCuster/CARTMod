@@ -22,6 +22,10 @@ shinyServer(function(input, output) {
                  "textInput"),
         stringsAsFactors = FALSE
     )
-    
-    callModule(addModule, "iris", modalTitle = "Add Iris", inputData = irisInputs, db = testdb, dbTable = "iris")
+
+    callModule(addModule, "iris",
+               modalTitle = "Add Iris",
+               inputData = irisInputs,
+               db = testdb,
+               dbTable = "iris")
 })

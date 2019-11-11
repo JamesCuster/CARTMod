@@ -20,9 +20,10 @@ populated from an observation in the database. (NEED MORE DOCUMENTATION
 HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)}
 
 \item{choices}{Optional argument to provide the choices for
-\code{\link[shiny]{selectInput}} and \code{\link[shiny:selectInput]{selectizeInput}}
-inputs. NEED TO VERIFY THAT THIS WORKS. FOR THE EXAMPLE i USED TO DEVELOP
-THIS i DID NOT HAVE A SELECT INPUT}
+\code{\link[shiny]{selectInput}} and
+\code{\link[shiny:selectInput]{selectizeInput}} inputs. NEED TO VERIFY THAT
+THIS WORKS. FOR THE EXAMPLE i USED TO DEVELOP THIS i DID NOT HAVE A SELECT
+INPUT}
 }
 \description{
 Takes a \code{data.frame} containing information about shiny inputs and

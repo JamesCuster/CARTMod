@@ -4,7 +4,8 @@ library(dplyr)
 library(CARTMod)
 
 # Connect to database
-dbPath <- system.file("shinyExamples", "irisApp", "iris.sqlite", package = "CARTMod")
+dbPath <- system.file("shinyExamples", "irisApp", "iris.sqlite",
+                      package = "CARTMod")
 testdb <- dbConnect(dbDriver("SQLite"), dbPath)
 
 # Create reactive to store db tables

@@ -22,7 +22,9 @@ insertCallback <- function(input, output, session, ids, db, tab) {
                       as.character(input[[x]])
                     }
                   }
-                  else if (is.null(input[[x]]) || length(input[[x]]) == 0 || input[[x]] == "") {
+                  else if (is.null(input[[x]]) ||
+                           length(input[[x]]) == 0 ||
+                           input[[x]] == "") {
                     NA
                   }
                   else {

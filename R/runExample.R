@@ -7,7 +7,8 @@
 runExample <- function() {
   appDir <- system.file("shinyExamples", "irisApp", "app", package = "CARTMod")
   if (appDir == "") {
-    stop("Could not find example directory. Try re-installing `CARTMod`.", call. = FALSE)
+    stop("Could not find example directory. Try re-installing `CARTMod`.",
+         call. = FALSE)
   }
 
   shiny::runApp(appDir, display.mode = "normal")
