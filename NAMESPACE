@@ -2,5 +2,6 @@
 
 export(addModule)
 export(addModuleUI)
+export(insertCallback)
 export(modalInputs)
 export(runExample)

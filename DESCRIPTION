@@ -1,13 +1,14 @@
 Package: CARTMod
-Title: What the Package Does (One Line, Title Case)
+Title: Functions and Shiny Modules for CART
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "James",
+           family = "Custer",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
+           email = "james.custer@austin.utexas.edu",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: This package provides various functions, shiny modules, and 
+    associated documentation used within the CART app. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

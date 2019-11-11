@@ -2,13 +2,13 @@
 shinyUI(
     fluidPage(
         tabsetPanel(
-            
+
             # iris
             tabPanel(
                 "Iris",
                 addModuleUI("iris")
             )
-            
+
             # mtcars
         )
     )
