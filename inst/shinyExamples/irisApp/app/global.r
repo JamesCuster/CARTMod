@@ -1,6 +1,7 @@
 library(shiny)
 library(RSQLite)
 library(dplyr)
+library(DT)
 library(CARTMod)
 
 # Connect to database

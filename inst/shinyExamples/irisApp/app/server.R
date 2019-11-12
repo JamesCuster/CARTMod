@@ -28,12 +28,13 @@ shinyServer(function(input, output, session) {
                 }
             },
             valueFunc = function() {
-                loadDatabase(tables = modified$tableName)
+                loadDatabase(irisdb, tables = modified$tableName)
             }
         )
 
     # observe which applies the monitorDatabase reactive
     observe({
+        #browser()
         monitorDatabase()
     })
 
@@ -53,14 +54,9 @@ shinyServer(function(input, output, session) {
     )
 
 
-
-
-
-
-    addModule <- function(input, output, session,
-                          modalTitle, inputData, db, dbTable) {
-        # Reactive which gathers the choices for the select and selectize inputs
-        choicesReactive <- reactive({
+    # Reactive which gathers the choices for the select and selectize inputs
+    choicesReactive <- function(inputData) {
+        choicesReact <- reactive({
             choices <-
                 apply(
                     inputData, 1,
@@ -78,10 +74,21 @@ shinyServer(function(input, output, session) {
             choices <- setNames(choices, inputData$ids)
             return(choices)
         })
+        return(choicesReact())
+    }
 
-        # controls what happens when add is pressed
+
+
+
+    addModule <- function(input, output, session,
+                          modalTitle, inputData, db, dbTable) {
+        # Checks inputData for select input types, if present, gathers the choices
         shiny::observeEvent(input$add, {
-            choices <- choicesReactive()
+            if (any(grepl("select", inputData$type))) {
+                choices <- choicesReactive(inputData)
+            }
+
+            # controls what happens when add is pressed
             shiny::showModal(
                 shiny::modalDialog(
                     title = modalTitle,
@@ -133,4 +140,24 @@ shinyServer(function(input, output, session) {
                inputData = flowerInputs,
                db = irisdb,
                dbTable = "flowers")
+
+    flowersRowSelected <- NULL
+
+    output$flowers <-
+        renderDataTable(
+            datatable(
+                reactiveData$flowers,
+                selection = list(
+                    mode = 'single',
+                    selected = flowersRowSelected
+                ),
+                rownames = FALSE,
+                options = list(
+                    dom = '<"top"fl> t <"bottom"ip>',
+                    rowId = 'researcherID',
+                    order = list(0, 'desc')
+                )
+            ),
+            server = TRUE
+        )
 })
