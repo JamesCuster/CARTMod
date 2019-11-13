@@ -7,11 +7,14 @@
 valueLabel(df, value, label)
 }
 \arguments{
-\item{df}{a data.frame}
+\item{df}{A \code{data.frame} where the choices for the select/selectize
+input are.}
 
-\item{value}{value labels}
+\item{value}{The column in \code{df} where the numeric ID value for a choice
+is stored.}
 
-\item{label}{labels}
+\item{label}{The column in the \code{df} where the charater label/name for a
+choice is stored.}
 }
 \description{
 Define label/value pairs for select/selectize inputs
