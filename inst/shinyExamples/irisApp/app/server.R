@@ -53,51 +53,6 @@ shinyServer(function(input, output, session) {
         stringsAsFactors = FALSE
     )
 
-
-
-
-
-
-
-    addModule <- function(input, output, session,
-                          modalTitle, inputData, db, dbTable) {
-        # Checks inputData for select input types, if present, gathers the choices
-        shiny::observeEvent(input$add, {
-            if (any(grepl("select", inputData$type))) {
-                choices <- choicesReactive(inputData)
-            }
-
-            # controls what happens when add is pressed
-            shiny::showModal(
-                shiny::modalDialog(
-                    title = modalTitle,
-                    modalInputs(
-                        session = session,
-                        inputData = inputData,
-                        choices = choices
-                    ),
-                    footer =
-                        list(
-                            shiny::modalButton("Cancel"),
-                            shiny::actionButton(session$ns("insert"), "Save")
-                        )
-                )
-            )
-        })
-
-        # Controls what happens when Save is pressed
-        shiny::observeEvent(input$insert, {
-            insertCallback(input, output, session, inputData$ids, db, dbTable)
-            shiny::removeModal()
-        })
-    }
-
-
-
-
-
-
-
     callModule(addModule, "iris",
                modalTitle = "Add Iris",
                inputData = irisInputs,
