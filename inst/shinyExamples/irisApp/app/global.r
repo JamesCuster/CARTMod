@@ -33,7 +33,3 @@ loadDatabase <- function(db, tables = c("iris", "flowers", "modified")) {
 }
 
 loadDatabase(irisdb)
-
-
-
-

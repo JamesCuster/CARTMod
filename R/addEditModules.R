@@ -167,4 +167,3 @@ modalInputs <- function(session, inputData, values, choices) {
     )
   fields
 }
-
