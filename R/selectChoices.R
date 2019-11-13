@@ -1,8 +1,8 @@
 #' Create reactive for select/selectize input choices
 #'
 #' @export
-choicesReactive <- function(inputData) {
-  choicesReact <- reactive({
+choicesReactive <- function(inputData, reactiveData) {
+  choicesReact <- shiny::reactive({
     choices <-
       apply(
         inputData, 1,
@@ -17,7 +17,7 @@ choicesReactive <- function(inputData) {
           }
         }
       )
-    choices <- setNames(choices, inputData$ids)
+    choices <- stats::setNames(choices, inputData$ids)
     return(choices)
   })
   return(choicesReact())

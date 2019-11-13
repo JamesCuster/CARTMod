@@ -4,7 +4,7 @@
 \alias{choicesReactive}
 \title{Create reactive for select/selectize input choices}
 \usage{
-choicesReactive(inputData)
+choicesReactive(inputData, reactiveData)
 }
 \description{
 Create reactive for select/selectize input choices

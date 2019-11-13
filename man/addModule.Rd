@@ -4,7 +4,8 @@
 \alias{addModule}
 \title{Add database entry button: server function}
 \usage{
-addModule(input, output, session, modalTitle, inputData, db, dbTable)
+addModule(input, output, session, modalTitle, inputData, db, dbTable,
+  reactiveData)
 }
 \arguments{
 \item{input, output, session}{These parameters are handled by

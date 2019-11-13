@@ -57,7 +57,8 @@ shinyServer(function(input, output, session) {
                modalTitle = "Add Iris",
                inputData = irisInputs,
                db = irisdb,
-               dbTable = "iris")
+               dbTable = "iris",
+               reactiveData = reactiveData)
 
 
 
@@ -73,7 +74,8 @@ shinyServer(function(input, output, session) {
                modalTitle = "Add Flower",
                inputData = flowerInputs,
                db = irisdb,
-               dbTable = "flowers")
+               dbTable = "flowers",
+               reactiveData = reactiveData)
 
     flowersRowSelected <- NULL
 
