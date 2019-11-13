@@ -24,6 +24,9 @@ returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 database connection is saved to.}
 
 \item{dbTable}{The database table the new data will be added to.}
+
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
 }
 \value{
 Shiny \code{\link[shiny]{observeEvent}}'s which control actions when

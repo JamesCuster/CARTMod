@@ -52,6 +52,8 @@ addModuleUI <- function(id) {
 #'   returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 #'   database connection is saved to.
 #' @param dbTable The database table the new data will be added to.
+#' @param reactiveData Reactive which stores all of the tables from the database
+#'   as seperate \code{data.frames}
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
@@ -59,7 +61,8 @@ addModuleUI <- function(id) {
 #' @seealso \code{\link{addModuleUI}}
 #'
 #' @export
-addModule <- function(input, output, session, modalTitle, inputData, db, dbTable, reactiveData) {
+addModule <- function(input, output, session,
+                      modalTitle, inputData, db, dbTable, reactiveData) {
   # controls what happens when add is pressed
   shiny::observeEvent(input$add, {
     # Checks inputData for select input types, if present, gathers the choices

@@ -1,5 +1,7 @@
 #' Create reactive for select/selectize input choices
 #'
+#' @inheritParams addModule
+#'
 #' @export
 choicesReactive <- function(inputData, reactiveData) {
   choicesReact <- shiny::reactive({
@@ -26,9 +28,13 @@ choicesReactive <- function(inputData, reactiveData) {
 
 #' Define label/value pairs for select/selectize inputs
 #'
+#' @param df a data.frame
+#' @param value value labels
+#' @param label labels
+#'
 #' @export
 valueLabel <- function(df, value, label) {
-  x <- setNames(
+  x <- stats::setNames(
     as.character(df[[value]]),
     df[[label]]
   )

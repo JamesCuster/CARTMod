@@ -6,6 +6,13 @@
 \usage{
 valueLabel(df, value, label)
 }
+\arguments{
+\item{df}{a data.frame}
+
+\item{value}{value labels}
+
+\item{label}{labels}
+}
 \description{
 Define label/value pairs for select/selectize inputs
 }

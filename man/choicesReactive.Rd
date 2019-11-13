@@ -6,6 +6,15 @@
 \usage{
 choicesReactive(inputData, reactiveData)
 }
+\arguments{
+\item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
+type} which correspond to the field names of the table in the database,
+lables for the input in the shiny UI, and the type of shiny input to be
+used.}
+
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
+}
 \description{
 Create reactive for select/selectize input choices
 }
