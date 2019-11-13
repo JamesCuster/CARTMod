@@ -36,11 +36,4 @@ loadDatabase(irisdb)
 
 
 
-valueLabel <- function(df, value, label) {
-  x <- setNames(
-    as.character(df[[value]]),
-    df[[label]]
-  )
-  x <- x[sort(names(x))]
-  return(x)
-}
+

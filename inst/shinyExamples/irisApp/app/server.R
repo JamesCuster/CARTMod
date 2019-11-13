@@ -54,28 +54,7 @@ shinyServer(function(input, output, session) {
     )
 
 
-    # Reactive which gathers the choices for the select and selectize inputs
-    choicesReactive <- function(inputData) {
-        choicesReact <- reactive({
-            choices <-
-                apply(
-                    inputData, 1,
-                    function(x) {
-                        if (grepl("select", x["type"])) {
-                            valueLabel(
-                                df = reactiveData[[x["choicesTable"]]],
-                                value = x["choicesValues"],
-                                label = x["choicesLabels"])
-                        } else {
-                            return(NA)
-                        }
-                    }
-                )
-            choices <- setNames(choices, inputData$ids)
-            return(choices)
-        })
-        return(choicesReact())
-    }
+
 
 
 
