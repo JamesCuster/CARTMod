@@ -31,10 +31,12 @@ choicesReactive <- function(inputData, reactiveData) {
 #' Define label/value pairs for select/selectize inputs
 #'
 #' @param df A \code{data.frame} where the choices for the select/selectize
-#'   input are.
+#'   input are. (note: \code{data.frame} used in this argument should live in
+#'   the reactiveData object passed from the
+#'   \code{\link[CARTMod]{choicesReactive}} function)
 #' @param value The column in \code{df} where the numeric ID value for a choice
 #'   is stored.
-#' @param label The column in the \code{df} where the charater label/name for a
+#' @param label The column in \code{df} where the charater label/name for a
 #'   choice is stored.
 #'
 #' @export

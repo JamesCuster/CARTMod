@@ -8,12 +8,14 @@ valueLabel(df, value, label)
 }
 \arguments{
 \item{df}{A \code{data.frame} where the choices for the select/selectize
-input are.}
+input are. (note: \code{data.frame} used in this argument should live in
+the reactiveData object passed from the
+\code{\link[CARTMod]{choicesReactive}} function)}
 
 \item{value}{The column in \code{df} where the numeric ID value for a choice
 is stored.}
 
-\item{label}{The column in the \code{df} where the charater label/name for a
+\item{label}{The column in \code{df} where the charater label/name for a
 choice is stored.}
 }
 \description{
