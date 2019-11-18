@@ -4,13 +4,11 @@
 #'
 #' @export
 choicesReactive <- function(inputData, reactiveData) {
-  browser()
   choicesReact <- shiny::reactive({
     choices <-
       apply(
         inputData, 1,
         function(x) {
-          browser()
           if (grepl("select", x["type"])) {
             valueLabel(
               df = reactiveData[[x["choicesTable"]]],
@@ -41,7 +39,6 @@ choicesReactive <- function(inputData, reactiveData) {
 #'
 #' @export
 valueLabel <- function(df, value, label) {
-  browser()
   x <- stats::setNames(
     as.character(df[[value]]),
     df[[label]]
