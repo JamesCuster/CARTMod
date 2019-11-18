@@ -7,6 +7,6 @@
 runExample()
 }
 \description{
-This app uses the \code{iris} and \code{mtcars} data to showcase the
-\code{CARTMod} modules and functions in action.
+This app uses the \code{iris} data to showcase the \code{CARTMod} modules and
+functions in action.
 }

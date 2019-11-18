@@ -4,7 +4,8 @@
 \alias{addModule}
 \title{Add database entry button: server function}
 \usage{
-addModule(input, output, session, modalTitle, inputData, db, dbTable)
+addModule(input, output, session, modalTitle, inputData, db, dbTable,
+  reactiveData)
 }
 \arguments{
 \item{input, output, session}{These parameters are handled by
@@ -14,15 +15,40 @@ addModule(input, output, session, modalTitle, inputData, db, dbTable)
 the modal.}
 
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
-type} which correspond to the field names of the table in the database,
-lables for the input in the shiny UI, and the type of shiny input to be
-used.}
+  type, choicesTable, choicesValues, choicesLabels} which correspond to
+  \describe{
+    \item{\code{ids}}{The field names in the database. These ids will also be
+    used as the inputId for shiny inputs.}
+
+    \item{\code{labels}}{These are character values which will be used as the
+    label for shiny inputs and be displayed above the input in the UI.}
+
+    \item{\code{type}}{The type of shiny input to be used.}
+
+    \item{\code{choicesTable, choicesValues, choicesLabels}}{Only used if the
+    desired input has predefined choices
+    (\code{\link[shiny:selectInput]{selectInput/selectizeInput})}. If neither
+    of these inputs are used, then the values should be \code{NA}. If one of
+    these inputs is used then:
+      \describe{
+        \item{\code{choicesTable}}{Is the table in the database where the
+        choices for the given input are.}
+        \item{\code{choicesValues}}{Is the column in the table which stores
+        the numeric identifier for the choice}
+        \item{\code{choicesLabels}}{Is the column in the table which stores
+        the character name for the choices}
+      }
+    }
+  }}
 
 \item{db}{a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
 returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 database connection is saved to.}
 
 \item{dbTable}{The database table the new data will be added to.}
+
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
 }
 \value{
 Shiny \code{\link[shiny]{observeEvent}}'s which control actions when

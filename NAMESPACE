@@ -2,6 +2,8 @@
 
 export(addModule)
 export(addModuleUI)
+export(choicesReactive)
 export(insertCallback)
 export(modalInputs)
 export(runExample)
+export(valueLabel)
