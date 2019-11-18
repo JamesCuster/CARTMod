@@ -40,16 +40,17 @@ shinyServer(function(input, output, session) {
 
   # iris --------------------------------------------------------------------
   irisInputs <- data.frame(
-    ids = names(iris),
-    labels = gsub("\\.", " ", names(iris)),
-    type = c("textInput",
+    ids = c("irisID", names(iris)),
+    labels = c("irisID", gsub("\\.", " ", names(iris))),
+    type = c("skip",
+             "textInput",
              "textInput",
              "textInput",
              "textInput",
              "selectizeInput"),
-    choicesTable = c(NA, NA, NA, NA, "flowers"),
-    choicesValues = c(NA, NA, NA, NA, "flowerID"),
-    choicesLabels = c(NA, NA, NA, NA, "flowerName"),
+    choicesTable = c(NA, NA, NA, NA, NA, "flowers"),
+    choicesValues = c(NA, NA, NA, NA, NA, "flowerID"),
+    choicesLabels = c(NA, NA, NA, NA, NA, "flowerName"),
     stringsAsFactors = FALSE
   )
 
@@ -59,6 +60,9 @@ shinyServer(function(input, output, session) {
              db = irisdb,
              dbTable = "iris",
              reactiveData = reactiveData)
+
+  callModule(dtModule, "iris",
+             tab = reactiveData$iris)
 
 
 

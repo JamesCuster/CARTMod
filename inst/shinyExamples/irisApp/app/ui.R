@@ -2,10 +2,15 @@
 shinyUI(
   fluidPage(
     tabsetPanel(
-      # iris
+      # iris --------------------------------------------------------------
       tabPanel(
         "Iris",
-        addModuleUI("iris")
+
+        # Add button
+        addModuleUI("iris"),
+
+        # Datatable
+        dtModuleUI("iris")
       ),
 
       # flowers

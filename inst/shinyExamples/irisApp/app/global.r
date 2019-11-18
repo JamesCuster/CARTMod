@@ -33,3 +33,35 @@ loadDatabase <- function(db, tables = c("iris", "flowers", "modified")) {
 }
 
 loadDatabase(irisdb)
+
+
+
+# Datatable module --------------------------------------------------------
+
+dtModuleUI <- function(id) {
+  ns <- NS(id)
+
+  list(
+    dataTableOutput(ns("dt"))
+  )
+}
+
+dtModule <- function(input, output, session, tab) {
+  output$dt <-
+    renderDataTable(
+      datatable(
+        tab,
+        selection = list(
+          mode = "single",
+          selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
+        ),
+        rownames = FALSE,
+        options = list(
+          dom = '<"top"fl> t <"bottom"ip>',
+          rowId = "researcherID",
+          order = list(0, "desc")
+        )
+      ),
+      server = TRUE
+    )
+}
