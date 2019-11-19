@@ -63,7 +63,7 @@ shinyServer(function(input, output, session) {
 
   callModule(dtModule, "iris",
              reactiveData,
-             tab = "iris")
+             dbTable = "iris")
 
 
 
@@ -84,5 +84,5 @@ shinyServer(function(input, output, session) {
 
   callModule(dtModule, "flowers",
              reactiveData,
-             tab = "flowers")
+             dbTable = "flowers")
 })

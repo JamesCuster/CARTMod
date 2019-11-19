@@ -4,7 +4,22 @@
 \alias{dtModule}
 \title{Add reactive datatable: server function}
 \usage{
-dtModule(input, output, session, reactiveData, tab)
+dtModule(input, output, session, reactiveData, dbTable)
+}
+\arguments{
+\item{input}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+
+\item{output}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+
+\item{session}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
+
+\item{dbTable}{The database table the new data will be added to.}
 }
 \description{
 Add reactive datatable: server function

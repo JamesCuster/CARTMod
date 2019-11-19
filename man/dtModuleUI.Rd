@@ -6,6 +6,9 @@
 \usage{
 dtModuleUI(id)
 }
+\arguments{
+\item{id}{character name for the namespace of the module}
+}
 \description{
 Add reactive datatable: UI function
 }

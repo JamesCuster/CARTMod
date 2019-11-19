@@ -1,8 +1,10 @@
 #' Add reactive datatable: UI function
 #'
+#' @inheritParams addModuleUI
+#'
 #' @export
 dtModuleUI <- function(id) {
-  ns <- NS(id)
+  ns <- shiny::NS(id)
 
   list(
     DT::dataTableOutput(ns("dt"))
@@ -13,20 +15,27 @@ dtModuleUI <- function(id) {
 
 #' Add reactive datatable: server function
 #'
+#' @inheritParams addModule
+#'
 #' @export
-dtModule <- function(input, output, session, reactiveData, tab) {
+dtModule <- function(input, output, session, reactiveData, dbTable) {
+  # used to presreve selected row on reloads if row is selected
+  selected <- NULL
+  shiny::observeEvent(input$dt_rows_selected, {
+    selected <<- input$dt_rows_selected
+  })
+
   output$dt <-
     DT::renderDataTable(
       DT::datatable(
-        reactiveData[[tab]],
+        reactiveData[[dbTable]],
         selection = list(
           mode = "single",
-          selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
+          selected = selected
         ),
         rownames = FALSE,
         options = list(
           dom = '<"top"fl> t <"bottom"ip>',
-          rowId = "researcherID",
           order = list(0, "desc")
         )
       ),
@@ -36,11 +45,11 @@ dtModule <- function(input, output, session, reactiveData, tab) {
 
 # # Alternative approach to dtModule function. Kept as comment just in case it
 # # is needed for future development
-# dtModule <- function(input, output, session, tab) {
+# dtModule <- function(input, output, session, dbTable) {
 #   output$dt <-
 #     renderDataTable(
 #       datatable(
-#         tab(),
+#         dbTable(),
 #         selection = list(
 #           mode = "single",
 #           selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
@@ -57,4 +66,4 @@ dtModule <- function(input, output, session, reactiveData, tab) {
 # }
 #
 # callModule(dtModule, "iris",
-#            tab = reactive(reactiveData$iris))
+#            dbTable = reactive(reactiveData$iris))
