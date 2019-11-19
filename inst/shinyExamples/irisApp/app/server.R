@@ -62,7 +62,8 @@ shinyServer(function(input, output, session) {
              reactiveData = reactiveData)
 
   callModule(dtModule, "iris",
-             tab = reactiveData$iris)
+             reactiveData,
+             tab = "iris")
 
 
 

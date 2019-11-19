@@ -46,11 +46,36 @@ dtModuleUI <- function(id) {
   )
 }
 
-dtModule <- function(input, output, session, tab) {
+# dtModule <- function(input, output, session, tab) {
+#   output$dt <-
+#     renderDataTable(
+#       datatable(
+#         tab(),
+#         selection = list(
+#           mode = "single",
+#           selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
+#         ),
+#         rownames = FALSE,
+#         options = list(
+#           dom = '<"top"fl> t <"bottom"ip>',
+#           rowId = "researcherID",
+#           order = list(0, "desc")
+#         )
+#       ),
+#       server = TRUE
+#     )
+# }
+#
+# callModule(dtModule, "iris",
+#            tab = reactive(reactiveData$iris))
+
+
+
+dtModule <- function(input, output, session, reactiveData, tab) {
   output$dt <-
     renderDataTable(
       datatable(
-        tab,
+        reactiveData[[tab]],
         selection = list(
           mode = "single",
           selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
