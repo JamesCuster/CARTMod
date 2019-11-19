@@ -16,8 +16,12 @@ shinyUI(
       # flowers
       tabPanel(
         "Flowers",
+
+        # Add button
         addModuleUI("flowers"),
-        dataTableOutput("flowers")
+
+        # Datatable
+        dtModuleUI("flowers")
       )
     )
   )

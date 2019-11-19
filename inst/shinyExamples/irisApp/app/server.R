@@ -82,23 +82,7 @@ shinyServer(function(input, output, session) {
              dbTable = "flowers",
              reactiveData = reactiveData)
 
-  flowersRowSelected <- NULL
-
-  output$flowers <-
-    renderDataTable(
-      datatable(
-        reactiveData$flowers,
-        selection = list(
-          mode = "single",
-          selected = flowersRowSelected
-        ),
-        rownames = FALSE,
-        options = list(
-          dom = '<"top"fl> t <"bottom"ip>',
-          rowId = "researcherID",
-          order = list(0, "desc")
-        )
-      ),
-      server = TRUE
-    )
+  callModule(dtModule, "flowers",
+             reactiveData,
+             tab = "flowers")
 })
