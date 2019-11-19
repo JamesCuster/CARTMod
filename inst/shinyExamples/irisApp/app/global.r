@@ -38,13 +38,13 @@ loadDatabase(irisdb)
 
 # Datatable module --------------------------------------------------------
 
-dtModuleUI <- function(id) {
-  ns <- NS(id)
-
-  list(
-    dataTableOutput(ns("dt"))
-  )
-}
+# dtModuleUI <- function(id) {
+#   ns <- NS(id)
+#
+#   list(
+#     dataTableOutput(ns("dt"))
+#   )
+# }
 
 # dtModule <- function(input, output, session, tab) {
 #   output$dt <-
@@ -71,22 +71,22 @@ dtModuleUI <- function(id) {
 
 
 
-dtModule <- function(input, output, session, reactiveData, tab) {
-  output$dt <-
-    renderDataTable(
-      datatable(
-        reactiveData[[tab]],
-        selection = list(
-          mode = "single",
-          selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
-        ),
-        rownames = FALSE,
-        options = list(
-          dom = '<"top"fl> t <"bottom"ip>',
-          rowId = "researcherID",
-          order = list(0, "desc")
-        )
-      ),
-      server = TRUE
-    )
-}
+# dtModule <- function(input, output, session, reactiveData, tab) {
+#   output$dt <-
+#     renderDataTable(
+#       datatable(
+#         reactiveData[[tab]],
+#         selection = list(
+#           mode = "single",
+#           selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
+#         ),
+#         rownames = FALSE,
+#         options = list(
+#           dom = '<"top"fl> t <"bottom"ip>',
+#           rowId = "researcherID",
+#           order = list(0, "desc")
+#         )
+#       ),
+#       server = TRUE
+#     )
+# }
