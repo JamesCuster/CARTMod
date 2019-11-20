@@ -130,26 +130,3 @@ dtFilterUpdates <- function(input, output, session, filterData, reactiveData) {
     }
   )
 }
-
-
-choicesReactive <- function(inputData, reactiveData) {
-  choicesReact <- shiny::reactive({
-    choices <-
-      lapply(
-        inputData$ids,
-        function(x) {
-          if (grepl("select", inputData[inputData$ids == x, "type"])) {
-            valueLabel(
-              df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
-              value = inputData[inputData$ids == x, "choicesValues"],
-              label = inputData[inputData$ids == x, "choicesLabels"])
-          } else {
-            return(NA)
-          }
-        }
-      )
-    choices <- stats::setNames(choices, inputData$ids)
-    return(choices)
-  })
-  return(choicesReact())
-}
