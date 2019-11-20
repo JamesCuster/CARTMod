@@ -102,28 +102,6 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
       server = TRUE
     )
 
-  # # updates filter choices as new data is added.
-  # observeEvent(lapply(names(reactiveValuesToList(reactiveData)), function(x) {reactiveData[[x]]}), {
-  #   browser()
-  #   # If no filterData is provided, want to skip this observeEvent
-  #   if (is.null(filterData)) {
-  #     return()
-  #   }
-  #
-  #   # Gather choices for filters
-  #   choices <- choicesReactive(filterData, reactiveData)
-  #   apply(
-  #     filterData, 1,
-  #     function(x) {
-        # updateSelectizeInput(
-        #   session = session,
-        #   inputId = x["ids"],
-        #   choices = c(All = "All", choices()[[x["ids"]]]),
-        #   selected = input[["ids"]]
-        # )
-  #     }
-  #   )
-  # })
   if (!is.null(filterData)) {
     dtFilterUpdates(input, output, session, filterData = filterData, reactiveData = reactiveData)
   }
@@ -175,36 +153,3 @@ choicesReactive <- function(inputData, reactiveData) {
   })
   return(choicesReact())
 }
-
-
-
-# irisFilters <- data.frame(
-#   ids = c("species", "species", "species"),
-#   labels = c("Species", "species", "species"),
-#   type = c("selectizeInput", "selectizeInput", "selectizeInput"),
-#   choicesTable = c("flowers", "iris", "flowers"),
-#   choicesValues = c("flowerID", "flowerID", "flowerID"),
-#   choicesLabels = c("flowerName", "flowerName", "flowerName"),
-#   stringsAsFactors = FALSE
-# )
-
-# filtersList <- split(irisFilters, irisFilters$choicesTable)
-# lapply(
-#   filtersList,
-#   function(x) {
-#     browser()
-#     observeEvent(reactiveData[[x$choicesTable[1]]], {
-#       apply(x, 1,
-#         function(y) {
-#           browser()
-#           updateSelectizeInput(
-#             session = session,
-#             inputId = y["ids"],
-#             choices = c(All = "All", choices[[y["ids"]]]),
-#             selected = input[[y["ids"]]]
-#           )
-#         }
-#         )
-#     })
-#   }
-# )
