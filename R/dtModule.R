@@ -1,12 +1,42 @@
 #' Add reactive datatable: UI function
 #'
 #' @inheritParams addModuleUI
+#' @param filterData hello
 #'
 #' @export
-dtModuleUI <- function(id) {
+dtModuleUI <- function(id, filterData = NULL) {
   ns <- shiny::NS(id)
 
+  # Create filter inputs if they exists
+  if (!is.null(filterData)) {
+    filters <-
+      apply(
+        filterData, 1,
+        function(x) {
+          if (x["ids"] == filterData$ids[1]) {
+            style <- NULL
+          } else {
+            style <- "margin-left: 20px;"
+          }
+          div(
+            selectizeInput(
+              inputId = ns(x["ids"]),
+              label = x["labels"],
+              choices = "All"
+            ),
+            style = style
+          )
+        }
+      )
+  } else {
+    filters <- NULL
+  }
+
   list(
+    div(
+      filters,
+      style = "display: flex; align-items: flex-start;"
+    ),
     DT::dataTableOutput(ns("dt"))
   )
 }
@@ -16,15 +46,17 @@ dtModuleUI <- function(id) {
 #' Add reactive datatable: server function
 #'
 #' @inheritParams addModule
+#' @inheritParams dtModuleUI
 #'
 #' @export
-dtModule <- function(input, output, session, reactiveData, dbTable) {
+dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL) {
   # used to presreve selected row on reloads if row is selected
   selected <- NULL
   shiny::observeEvent(input$dt_rows_selected, {
     selected <<- input$dt_rows_selected
   })
 
+  # Creates the datatable
   output$dt <-
     DT::renderDataTable(
       DT::datatable(
@@ -41,7 +73,12 @@ dtModule <- function(input, output, session, reactiveData, dbTable) {
       ),
       server = TRUE
     )
+
+  if (!is.null(filterData)) {
+    dtFilterUpdates(input, output, session, filterData = filterData, reactiveData = reactiveData)
+  }
 }
+
 
 # # Alternative approach to dtModule function. Kept as comment just in case it
 # # is needed for future development
@@ -67,3 +104,29 @@ dtModule <- function(input, output, session, reactiveData, dbTable) {
 #
 # callModule(dtModule, "iris",
 #            dbTable = reactive(reactiveData$iris))
+
+
+#' Update filter choices
+#'
+#' @export
+dtFilterUpdates <- function(input, output, session, filterData, reactiveData) {
+  filtersList <- split(filterData, filterData$choicesTable)
+  lapply(
+    filtersList,
+    function(x) {
+      observeEvent(reactiveData[[x$choicesTable[1]]], {
+        choices <- choicesReactive(x, reactiveData)
+        apply(x, 1,
+              function(y) {
+                updateSelectizeInput(
+                  session = session,
+                  inputId = y["ids"],
+                  choices = c(All = "All", choices[[y["ids"]]]),
+                  selected = input[[y["ids"]]]
+                )
+              }
+        )
+      })
+    }
+  )
+}

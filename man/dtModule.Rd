@@ -4,7 +4,8 @@
 \alias{dtModule}
 \title{Add reactive datatable: server function}
 \usage{
-dtModule(input, output, session, reactiveData, dbTable)
+dtModule(input, output, session, reactiveData, dbTable,
+  filterData = NULL)
 }
 \arguments{
 \item{input}{These parameters are handled by
@@ -20,6 +21,8 @@ dtModule(input, output, session, reactiveData, dbTable)
 as seperate \code{data.frames}}
 
 \item{dbTable}{The database table the new data will be added to.}
+
+\item{filterData}{hello}
 }
 \description{
 Add reactive datatable: server function

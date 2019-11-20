@@ -3,6 +3,7 @@
 export(addModule)
 export(addModuleUI)
 export(choicesReactive)
+export(dtFilterUpdates)
 export(dtModule)
 export(dtModuleUI)
 export(insertCallback)
