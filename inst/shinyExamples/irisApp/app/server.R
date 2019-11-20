@@ -39,31 +39,6 @@ shinyServer(function(input, output, session) {
   })
 
   # iris --------------------------------------------------------------------
-  irisInputs <- data.frame(
-    ids = c("irisID", names(iris)),
-    labels = c("irisID", gsub("\\.", " ", names(iris))),
-    type = c("skip",
-             "textInput",
-             "textInput",
-             "textInput",
-             "textInput",
-             "selectizeInput"),
-    choicesTable = c(NA, NA, NA, NA, NA, "flowers"),
-    choicesValues = c(NA, NA, NA, NA, NA, "flowerID"),
-    choicesLabels = c(NA, NA, NA, NA, NA, "flowerName"),
-    stringsAsFactors = FALSE
-  )
-
-  irisFilters <- data.frame(
-    ids = c("species"),
-    labels = c("Species"),
-    type = c("selectizeInput"),
-    choicesTable = c("flowers"),
-    choicesValues = c("flowerID"),
-    choicesLabels = c("flowerName"),
-    stringsAsFactors = FALSE
-  )
-
   callModule(addModule, "iris",
              modalTitle = "Add Iris",
              inputData = irisInputs,
@@ -79,13 +54,6 @@ shinyServer(function(input, output, session) {
 
 
   # Flowers -----------------------------------------------------------------
-  flowerInputs <- data.frame(
-    ids = c("flowerID", "flowerName"),
-    labels = c("flowerID", "Flower Name"),
-    type = c("skip", "textInput"),
-    stringsAsFactors = FALSE
-  )
-
   callModule(addModule, "flowers",
              modalTitle = "Add Flower",
              inputData = flowerInputs,
