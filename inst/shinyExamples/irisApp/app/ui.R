@@ -10,7 +10,7 @@ shinyUI(
         addModuleUI("iris"),
 
         # Datatable
-        dtModuleUI("iris")
+        dtModuleUI("iris", irisFilters)
       ),
 
       # flowers

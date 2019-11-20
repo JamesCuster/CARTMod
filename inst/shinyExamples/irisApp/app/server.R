@@ -54,6 +54,15 @@ shinyServer(function(input, output, session) {
     stringsAsFactors = FALSE
   )
 
+  irisFilters <- data.frame(
+    ids = c("species", "filter1"),
+    labels = c("Species", "filter 1"),
+    type = c("selectizeInput", "selectizeInput"),
+    choicesTable = c("flowers", NA),
+    choicesValues = c("flowerID", NA),
+    choicesLables = c("flowerName", NA)
+  )
+
   callModule(addModule, "iris",
              modalTitle = "Add Iris",
              inputData = irisInputs,
