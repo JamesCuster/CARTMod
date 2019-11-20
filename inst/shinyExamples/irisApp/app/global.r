@@ -77,13 +77,14 @@ dtModuleUI <- function(id, filterData = NULL) {
 }
 
 
-dtModule <- function(input, output, session, reactiveData, dbTable) {
+dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL) {
   # used to presreve selected row on reloads if row is selected
   selected <- NULL
   shiny::observeEvent(input$dt_rows_selected, {
     selected <<- input$dt_rows_selected
   })
 
+  # Creates the datatable
   output$dt <-
     DT::renderDataTable(
       DT::datatable(
@@ -100,4 +101,110 @@ dtModule <- function(input, output, session, reactiveData, dbTable) {
       ),
       server = TRUE
     )
+
+  # # updates filter choices as new data is added.
+  # observeEvent(lapply(names(reactiveValuesToList(reactiveData)), function(x) {reactiveData[[x]]}), {
+  #   browser()
+  #   # If no filterData is provided, want to skip this observeEvent
+  #   if (is.null(filterData)) {
+  #     return()
+  #   }
+  #
+  #   # Gather choices for filters
+  #   choices <- choicesReactive(filterData, reactiveData)
+  #   apply(
+  #     filterData, 1,
+  #     function(x) {
+        # updateSelectizeInput(
+        #   session = session,
+        #   inputId = x["ids"],
+        #   choices = c(All = "All", choices()[[x["ids"]]]),
+        #   selected = input[["ids"]]
+        # )
+  #     }
+  #   )
+  # })
+  if (!is.null(filterData)) {
+    dtFilterUpdates(input, output, session, filterData = filterData, reactiveData = reactiveData)
+  }
 }
+
+
+
+dtFilterUpdates <- function(input, output, session, filterData, reactiveData) {
+  filtersList <- split(filterData, filterData$choicesTable)
+  lapply(
+    filtersList,
+    function(x) {
+      observeEvent(reactiveData[[x$choicesTable[1]]], {
+        choices <- choicesReactive(x, reactiveData)
+        apply(x, 1,
+          function(y) {
+            updateSelectizeInput(
+              session = session,
+              inputId = y["ids"],
+              choices = c(All = "All", choices[[y["ids"]]]),
+              selected = input[[y["ids"]]]
+            )
+          }
+        )
+      })
+    }
+  )
+}
+
+
+choicesReactive <- function(inputData, reactiveData) {
+  choicesReact <- shiny::reactive({
+    choices <-
+      lapply(
+        inputData$ids,
+        function(x) {
+          if (grepl("select", inputData[inputData$ids == x, "type"])) {
+            valueLabel(
+              df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
+              value = inputData[inputData$ids == x, "choicesValues"],
+              label = inputData[inputData$ids == x, "choicesLabels"])
+          } else {
+            return(NA)
+          }
+        }
+      )
+    choices <- stats::setNames(choices, inputData$ids)
+    return(choices)
+  })
+  return(choicesReact())
+}
+
+
+
+# irisFilters <- data.frame(
+#   ids = c("species", "species", "species"),
+#   labels = c("Species", "species", "species"),
+#   type = c("selectizeInput", "selectizeInput", "selectizeInput"),
+#   choicesTable = c("flowers", "iris", "flowers"),
+#   choicesValues = c("flowerID", "flowerID", "flowerID"),
+#   choicesLabels = c("flowerName", "flowerName", "flowerName"),
+#   stringsAsFactors = FALSE
+# )
+
+# filtersList <- split(irisFilters, irisFilters$choicesTable)
+# lapply(
+#   filtersList,
+#   function(x) {
+#     browser()
+#     observeEvent(reactiveData[[x$choicesTable[1]]], {
+#       apply(x, 1,
+#         function(y) {
+#           browser()
+#           updateSelectizeInput(
+#             session = session,
+#             inputId = y["ids"],
+#             choices = c(All = "All", choices[[y["ids"]]]),
+#             selected = input[[y["ids"]]]
+#           )
+#         }
+#         )
+#     })
+#   }
+# )
