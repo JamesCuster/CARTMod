@@ -44,12 +44,14 @@ shinyServer(function(input, output, session) {
              inputData = irisInputs,
              db = irisdb,
              dbTable = "iris",
-             reactiveData = reactiveData)
+             reactiveData = reactiveData,
+             staticChoices = irisStaticChoices)
 
   callModule(dtModule, "iris",
              reactiveData,
              dbTable = "iris",
-             filterData = irisFilters)
+             filterData = irisFilters
+             )
 
 
 
