@@ -28,7 +28,7 @@ insertCallback <- function(input, output, session, ids, db, tab) {
                     NA
                   }
                   else {
-                    input[[x]]
+                    trimws(input[[x]])
                   }
                 })
   new <- stats::setNames(new, ids)

@@ -4,8 +4,7 @@
 \alias{dtModule}
 \title{Add reactive datatable: server function}
 \usage{
-dtModule(input, output, session, reactiveData, dbTable,
-  filterData = NULL)
+dtModule(input, output, session, reactiveData, dbTable, filterData = NULL)
 }
 \arguments{
 \item{input}{These parameters are handled by
