@@ -39,37 +39,23 @@ shinyServer(function(input, output, session) {
   })
 
   # iris --------------------------------------------------------------------
-  irisInputs <- data.frame(
-    ids = names(iris),
-    labels = gsub("\\.", " ", names(iris)),
-    type = c("textInput",
-             "textInput",
-             "textInput",
-             "textInput",
-             "selectizeInput"),
-    choicesTable = c(NA, NA, NA, NA, "flowers"),
-    choicesValues = c(NA, NA, NA, NA, "flowerID"),
-    choicesLabels = c(NA, NA, NA, NA, "flowerName"),
-    stringsAsFactors = FALSE
-  )
-
   callModule(addModule, "iris",
              modalTitle = "Add Iris",
              inputData = irisInputs,
              db = irisdb,
              dbTable = "iris",
-             reactiveData = reactiveData)
+             reactiveData = reactiveData,
+             staticChoices = irisStaticChoices)
+
+  callModule(dtModule, "iris",
+             reactiveData,
+             dbTable = "iris",
+             filterData = irisFilters
+             )
 
 
 
   # Flowers -----------------------------------------------------------------
-  flowerInputs <- data.frame(
-    ids = c("flowerID", "flowerName"),
-    labels = c("flowerID", "Flower Name"),
-    type = c("skip", "textInput"),
-    stringsAsFactors = FALSE
-  )
-
   callModule(addModule, "flowers",
              modalTitle = "Add Flower",
              inputData = flowerInputs,
@@ -77,23 +63,7 @@ shinyServer(function(input, output, session) {
              dbTable = "flowers",
              reactiveData = reactiveData)
 
-  flowersRowSelected <- NULL
-
-  output$flowers <-
-    renderDataTable(
-      datatable(
-        reactiveData$flowers,
-        selection = list(
-          mode = "single",
-          selected = flowersRowSelected
-        ),
-        rownames = FALSE,
-        options = list(
-          dom = '<"top"fl> t <"bottom"ip>',
-          rowId = "researcherID",
-          order = list(0, "desc")
-        )
-      ),
-      server = TRUE
-    )
+  callModule(dtModule, "flowers",
+             reactiveData,
+             dbTable = "flowers")
 })

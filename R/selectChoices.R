@@ -4,18 +4,16 @@
 #'
 #' @export
 choicesReactive <- function(inputData, reactiveData) {
-  browser()
   choicesReact <- shiny::reactive({
     choices <-
-      apply(
-        inputData, 1,
+      lapply(
+        inputData$ids,
         function(x) {
-          browser()
-          if (grepl("select", x["type"])) {
+          if (grepl("select", inputData[inputData$ids == x, "type"])) {
             valueLabel(
-              df = reactiveData[[x["choicesTable"]]],
-              value = x["choicesValues"],
-              label = x["choicesLabels"])
+              df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
+              value = inputData[inputData$ids == x, "choicesValues"],
+              label = inputData[inputData$ids == x, "choicesLabels"])
           } else {
             return(NA)
           }
@@ -26,7 +24,6 @@ choicesReactive <- function(inputData, reactiveData) {
   })
   return(choicesReact())
 }
-
 
 #' Define label/value pairs for select/selectize inputs
 #'
@@ -41,7 +38,6 @@ choicesReactive <- function(inputData, reactiveData) {
 #'
 #' @export
 valueLabel <- function(df, value, label) {
-  browser()
   x <- stats::setNames(
     as.character(df[[value]]),
     df[[label]]

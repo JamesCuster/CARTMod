@@ -2,17 +2,26 @@
 shinyUI(
   fluidPage(
     tabsetPanel(
-      # iris
+      # iris --------------------------------------------------------------
       tabPanel(
         "Iris",
-        addModuleUI("iris")
+
+        # Add button
+        addModuleUI("iris"),
+
+        # Datatable
+        dtModuleUI("iris", irisFilters, irisStaticChoices)
       ),
 
       # flowers
       tabPanel(
         "Flowers",
+
+        # Add button
         addModuleUI("flowers"),
-        dataTableOutput("flowers")
+
+        # Datatable
+        dtModuleUI("flowers")
       )
     )
   )
