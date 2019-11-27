@@ -84,7 +84,8 @@ addModuleUI <- function(id) {
 #'
 #' @export
 addModule <- function(input, output, session,
-                      modalTitle, inputData, db, dbTable, reactiveData) {
+                      modalTitle, inputData, db, dbTable, reactiveData,
+                      checkDuplicate = NULL) {
   # controls what happens when add is pressed
   shiny::observeEvent(input$add, {
     # Checks inputData for select input types, if present, gathers the choices
@@ -112,8 +113,29 @@ addModule <- function(input, output, session,
 
   # Controls what happens when Save is pressed
   shiny::observeEvent(input$insert, {
-    insertCallback(input, output, session, inputData$ids, db, dbTable)
-    shiny::removeModal()
+    if (!is.null(checkDuplicate)) {
+      possibleDuplicates <- checkDuplicateFunction(input, output, session, checkDuplicate, dbTable)
+      if (!is.null(possibleDuplicates)) {
+
+        # create datatable of duplicates
+        output$duplicate <- DT::renderDataTable(
+          DT::datatable(possibleDuplicates),
+          server = TRUE
+        )
+
+        # display duplicate datatable in modal
+        showModal(
+          modalDialog(
+            title = "Possible Duplicate",
+            dataTableOutput(session$ns("duplicate"))
+          )
+        )
+      }
+    }
+    else {
+      insertCallback(input, output, session, inputData$ids, db, dbTable)
+      shiny::removeModal()
+    }
   })
 }
 

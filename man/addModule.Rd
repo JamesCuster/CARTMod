@@ -12,7 +12,8 @@ addModule(
   inputData,
   db,
   dbTable,
-  reactiveData
+  reactiveData,
+  checkDuplicate = NULL
 )
 }
 \arguments{
