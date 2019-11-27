@@ -79,6 +79,21 @@ flowerInputs <- data.frame(
 
 
 
+checkDuplicateFunction <- function(input, output, session, ids, dbTable) {
+  possibleDuplicate <- lapply(ids, function(x, input) {
+    value <- tolower(input[[x]])
+    fieldValues <- tolower(reactiveData[[dbTable]][[x]])
+    if (value %in% fieldValues) {
+      reactiveData[[dbTable]][which(value == fieldValues), ]
+    }
+  }, input)
+  do.call(rbind, possibleDuplicate)
+}
+
+
+
+
+
 
 
 dtModuleUI <- function(id, filterData = NULL, staticChoices = NULL) {
@@ -119,7 +134,10 @@ dtModuleUI <- function(id, filterData = NULL, staticChoices = NULL) {
 }
 
 
-dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL, staticChoices) {
+
+
+
+dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL, staticChoices = NULL) {
   # used to presreve selected row on reloads if row is selected
   selected <- NULL
   shiny::observeEvent(input$dt_rows_selected, {
@@ -177,63 +195,68 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
 }
 
 
-addModule <- function(input, output, session,
-                      modalTitle, inputData, db, dbTable, reactiveData,
-                      staticChoices = NULL) {
-  # controls what happens when add is pressed
-  shiny::observeEvent(input$add, {
-    # Checks inputData for select input types, if present, gathers the choices
-    if (any(grepl("select", inputData$type))) {
-      choices <- choicesReactive(inputData, reactiveData, staticChoices)
-    }
 
-    # Creates modal
-    shiny::showModal(
-      shiny::modalDialog(
-        title = modalTitle,
-        modalInputs(
-          session = session,
-          inputData = inputData,
-          choices = choices
-        ),
-        footer =
-          list(
-            shiny::modalButton("Cancel"),
-            shiny::actionButton(session$ns("insert"), "Save")
-          )
-      )
-    )
-  })
 
-  # Controls what happens when Save is pressed
-  shiny::observeEvent(input$insert, {
-    insertCallback(input, output, session, inputData$ids, db, dbTable)
-    shiny::removeModal()
-  })
-}
 
-choicesReactive <- function(inputData, reactiveData, staticChoices) {
-  choicesReact <- shiny::reactive({
-    choices <-
-      lapply(
-        inputData$ids,
-        function(x) {
-          if (grepl("select", inputData[inputData$ids == x, "type"])) {
-            if (tolower(inputData[inputData$ids == x, "choicesTable"]) == "static") {
-              staticChoices[[x]]
-            } else {
-              valueLabel(
-                df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
-                value = inputData[inputData$ids == x, "choicesValues"],
-                label = inputData[inputData$ids == x, "choicesLabels"])
-            }
-          } else {
-            return(NA)
-          }
-        }
-      )
-    choices <- stats::setNames(choices, inputData$ids)
-    return(choices)
-  })
-  return(choicesReact())
-}
+# addModule <- function(input, output, session,
+#                       modalTitle, inputData, db, dbTable, reactiveData,
+#                       staticChoices = NULL) {
+#   # controls what happens when add is pressed
+#   shiny::observeEvent(input$add, {
+#     # Checks inputData for select input types, if present, gathers the choices
+#     if (any(grepl("select", inputData$type))) {
+#       choices <- choicesReactive(inputData, reactiveData, staticChoices)
+#     }
+#
+#     # Creates modal
+#     shiny::showModal(
+#       shiny::modalDialog(
+#         title = modalTitle,
+#         modalInputs(
+#           session = session,
+#           inputData = inputData,
+#           choices = choices
+#         ),
+#         footer =
+#           list(
+#             shiny::modalButton("Cancel"),
+#             shiny::actionButton(session$ns("insert"), "Save")
+#           )
+#       )
+#     )
+#   })
+#
+#   # Controls what happens when Save is pressed
+#   shiny::observeEvent(input$insert, {
+#     insertCallback(input, output, session, inputData$ids, db, dbTable)
+#     shiny::removeModal()
+#   })
+# }
+
+
+
+# choicesReactive <- function(inputData, reactiveData, staticChoices) {
+#   choicesReact <- shiny::reactive({
+#     choices <-
+#       lapply(
+#         inputData$ids,
+#         function(x) {
+#           if (grepl("select", inputData[inputData$ids == x, "type"])) {
+#             if (tolower(inputData[inputData$ids == x, "choicesTable"]) == "static") {
+#               staticChoices[[x]]
+#             } else {
+#               valueLabel(
+#                 df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
+#                 value = inputData[inputData$ids == x, "choicesValues"],
+#                 label = inputData[inputData$ids == x, "choicesLabels"])
+#             }
+#           } else {
+#             return(NA)
+#           }
+#         }
+#       )
+#     choices <- stats::setNames(choices, inputData$ids)
+#     return(choices)
+#   })
+#   return(choicesReact())
+# }
