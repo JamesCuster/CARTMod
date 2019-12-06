@@ -79,22 +79,6 @@ flowerInputs <- data.frame(
 
 
 
-checkDuplicateFunction <- function(input, output, session, ids, dbTable) {
-  possibleDuplicate <- lapply(ids, function(x, input) {
-    value <- tolower(input[[x]])
-    fieldValues <- tolower(reactiveData[[dbTable]][[x]])
-    if (value %in% fieldValues) {
-      reactiveData[[dbTable]][which(value == fieldValues), ]
-    }
-  }, input)
-  do.call(rbind, possibleDuplicate)
-}
-
-
-
-
-
-
 
 dtModuleUI <- function(id, filterData = NULL, staticChoices = NULL) {
   ns <- shiny::NS(id)

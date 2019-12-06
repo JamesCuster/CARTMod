@@ -43,8 +43,8 @@ shinyServer(function(input, output, session) {
              modalTitle = "Add Iris",
              inputData = irisInputs,
              db = irisdb,
-             dbTable = "iris")#,
-             # reactiveData = reactiveData)
+             dbTable = "iris",
+             reactiveData = reactiveData)
 
   callModule(dtModule, "iris",
              reactiveData,
@@ -60,7 +60,7 @@ shinyServer(function(input, output, session) {
              inputData = flowerInputs,
              db = irisdb,
              dbTable = "flowers",
-             # reactiveData = reactiveData,
+             reactiveData = reactiveData,
              checkDuplicate = c("flowerName"))
 
   callModule(dtModule, "flowers",

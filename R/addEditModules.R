@@ -119,24 +119,57 @@ addModule <- function(input, output, session,
 
         # create datatable of duplicates
         output$duplicate <- DT::renderDataTable(
-          DT::datatable(possibleDuplicates),
+          DT::datatable(possibleDuplicates, options = list(dom = "t")),
           server = TRUE
         )
 
         # display duplicate datatable in modal
         showModal(
           modalDialog(
-            title = "Possible Duplicate",
-            dataTableOutput(session$ns("duplicate"))
+            title = "Possible Duplicate Entry",
+            tags$h5("Is this the entry you are trying to input?"),
+            dataTableOutput(session$ns("duplicate")),
+            tags$h5("If yes, the entry already exists in the database. Please cancel addition."),
+            tags$h5("If no, proceed with addition."),
+            footer =
+              div(
+                actionButton(session$ns("continueAdd"), "Continue"),
+                actionButton(session$ns("cancelAdd"), "Cancel")
+              )
           )
         )
       }
-    }
-    else {
-      insertCallback(input, output, session, inputData$ids, db, dbTable)
-      shiny::removeModal()
+      else {
+        insertCallback(input, output, session, inputData$ids, db, dbTable)
+        shiny::removeModal()
+      }
     }
   })
+
+  # Observers to control duplicate modal action buttons
+  observeEvent(input$cancelAdd, {
+    shiny::removeModal()
+  })
+
+  observeEvent(input$continueAdd, {
+    insertCallback(input, output, session, inputData$ids, db, dbTable)
+    shiny::removeModal()
+  })
+}
+
+
+#' test
+#'
+#' @export
+checkDuplicateFunction <- function(input, output, session, ids, dbTable) {
+  possibleDuplicate <- lapply(ids, function(x, input) {
+    value <- tolower(input[[x]])
+    fieldValues <- tolower(reactiveData[[dbTable]][[x]])
+    if (value %in% fieldValues) {
+      reactiveData[[dbTable]][which(value == fieldValues), ]
+    }
+  }, input)
+  do.call(rbind, possibleDuplicate)
 }
 
 
