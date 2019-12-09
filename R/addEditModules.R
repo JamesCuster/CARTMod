@@ -139,8 +139,8 @@ addModule <- function(input, output, session,
             shiny::tags$h5("If no, proceed with addition."),
             footer =
               shiny::div(
-                shiny::actionButton(session$ns("continueAdd"), "Continue"),
-                shiny::actionButton(session$ns("cancelAdd"), "Cancel")
+                shiny::actionButton(session$ns("cancelAdd"), "Cancel"),
+                shiny::actionButton(session$ns("continueAdd"), "Continue")
               )
           )
         )
