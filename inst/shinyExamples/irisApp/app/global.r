@@ -71,9 +71,9 @@ irisFilters <- data.frame(
 
 # Flowers -----------------------------------------------------------------
 flowerInputs <- data.frame(
-  ids = c("flowerID", "flowerName"),
-  labels = c("flowerID", "Flower Name"),
-  type = c("skip", "textInput"),
+  ids = c("flowerID", "flowerName", "flowerName2"),
+  labels = c("flowerID", "Flower Name", "Flower Name 2"),
+  type = c("skip", "textInput", "textInput"),
   stringsAsFactors = FALSE
 )
 
