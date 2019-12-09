@@ -183,7 +183,9 @@ checkDuplicateFunction <- function(input, output, session,
       reactiveData[[dbTable]][which(value == fieldValues), ]
     }
   })
-  do.call(rbind, possibleDuplicate)
+  possibleDuplicate <- do.call(rbind, possibleDuplicate)
+  # remove any rows that were grabbed twice
+  possibleDuplicate[!duplicated(possibleDuplicate), ]
 }
 
 
