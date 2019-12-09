@@ -79,6 +79,8 @@ addModuleUI <- function(id) {
 #' @param checkDuplicate Character vector of columns names (corresponds to input
 #'   ids) that should be checked in the database for duplication. Default value
 #'   is \code{NULL} meaning no variables are checked for duplication
+#' @param additionalInputs Additional shiny inputs to be dislayed in the
+#'   inputModal provided as a list.
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
@@ -88,7 +90,7 @@ addModuleUI <- function(id) {
 #' @export
 addModule <- function(input, output, session,
                       modalTitle, inputData, db, dbTable, reactiveData,
-                      checkDuplicate = NULL) {
+                      checkDuplicate = NULL, additionalInputs = NULL) {
   # controls what happens when add is pressed
   shiny::observeEvent(input$add, {
     # Checks inputData for select input types, if present, gathers the choices
@@ -100,6 +102,7 @@ addModule <- function(input, output, session,
     shiny::showModal(
       shiny::modalDialog(
         title = modalTitle,
+        additionalInputs,
         modalInputs(
           session = session,
           inputData = inputData,

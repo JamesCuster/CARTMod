@@ -61,7 +61,9 @@ shinyServer(function(input, output, session) {
              db = irisdb,
              dbTable = "flowers",
              reactiveData = reactiveData,
-             checkDuplicate = c("flowerName", "flowerName2"))
+             checkDuplicate = c("flowerName", "flowerName2"),
+             additionalInputs = list(textInput("test", "test"),
+                                     textInput("test2", "test2")))
 
   callModule(dtModule, "flowers",
              reactiveData,
