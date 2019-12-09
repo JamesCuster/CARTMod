@@ -2,10 +2,38 @@
 % Please edit documentation in R/addEditModules.R
 \name{checkDuplicateFunction}
 \alias{checkDuplicateFunction}
-\title{test}
+\title{Function to check if entry is duplicate}
 \usage{
-checkDuplicateFunction(input, output, session, ids, dbTable)
+checkDuplicateFunction(
+  input,
+  output,
+  session,
+  checkDuplicate,
+  dbTable,
+  reactiveData
+)
+}
+\arguments{
+\item{input}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+
+\item{output}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+
+\item{session}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+
+\item{checkDuplicate}{Character vector of columns names (corresponds to input
+ids) that should be checked in the database for duplication. Default value
+is \code{NULL} meaning no variables are checked for duplication}
+
+\item{dbTable}{The database table the new data will be added to.}
+
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
 }
 \description{
-test
+This function checks the column names provided in \code{checkDuplicate} and
+checks the table provided in the \code{dbTable} argument if the new entry is
+a possible duplicate of a row that already exist in the database
 }
