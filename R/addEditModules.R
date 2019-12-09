@@ -131,6 +131,7 @@ addModule <- function(input, output, session,
         # display duplicate datatable in modal
         shiny::showModal(
           shiny::modalDialog(
+            size = "l",
             title = "Possible Duplicate Entry",
             shiny::tags$h5("Is this the entry you are trying to input?"),
             DT::dataTableOutput(session$ns("duplicate")),
