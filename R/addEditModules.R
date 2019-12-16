@@ -257,7 +257,7 @@ modalInputs <- function(session, inputData, values, choices) {
                         height = "102px")
         }
         else if (x["type"] == "dateInput") {
-          value <- if (value == "") NULL else value
+          value <- if (value == "") as.Date(NA) else value
           shiny::dateInput(inputId  = session$ns(x["ids"]),
                     label = x["labels"],
                     value = value,
