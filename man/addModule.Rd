@@ -14,7 +14,8 @@ addModule(
   dbTable,
   reactiveData,
   checkDuplicate = NULL,
-  additionalInputs = NULL
+  additionalInputs = NULL,
+  staticChoices = NULL
 )
 }
 \arguments{
@@ -65,7 +66,12 @@ ids) that should be checked in the database for duplication. Default value
 is \code{NULL} meaning no variables are checked for duplication}
 
 \item{additionalInputs}{Additional shiny inputs to be dislayed in the
-inputModal provided as a list.}
+inputModal provided as a list. Note: inputs used here will not be appened
+with the module name prefix as the other inputs are}
+
+\item{staticChoices}{List object which contains the choices for
+\code{\link[shiny:selectInput]{selectInput/selectizeInput})} which are not
+dependent on information in the database}
 }
 \value{
 Shiny \code{\link[shiny]{observeEvent}}'s which control actions when

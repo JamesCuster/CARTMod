@@ -3,17 +3,22 @@
 #' @inheritParams addModule
 #'
 #' @export
-choicesReactive <- function(inputData, reactiveData) {
+choicesReactive <- function(inputData, reactiveData, staticChoices = NULL) {
   choicesReact <- shiny::reactive({
     choices <-
       lapply(
         inputData$ids,
         function(x) {
           if (grepl("select", inputData[inputData$ids == x, "type"])) {
-            valueLabel(
-              df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
-              value = inputData[inputData$ids == x, "choicesValues"],
-              label = inputData[inputData$ids == x, "choicesLabels"])
+            if (inputData[inputData$ids == x, "choicesTable"] == "static") {
+              staticChoices[[x]]
+            }
+            else {
+              valueLabel(
+                df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
+                value = inputData[inputData$ids == x, "choicesValues"],
+                label = inputData[inputData$ids == x, "choicesLabels"])
+            }
           } else {
             return(NA)
           }

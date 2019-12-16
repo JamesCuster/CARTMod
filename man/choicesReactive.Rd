@@ -4,7 +4,7 @@
 \alias{choicesReactive}
 \title{Create reactive for select/selectize input choices}
 \usage{
-choicesReactive(inputData, reactiveData)
+choicesReactive(inputData, reactiveData, staticChoices = NULL)
 }
 \arguments{
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
@@ -36,6 +36,10 @@ choicesReactive(inputData, reactiveData)
 
 \item{reactiveData}{Reactive which stores all of the tables from the database
 as seperate \code{data.frames}}
+
+\item{staticChoices}{List object which contains the choices for
+\code{\link[shiny:selectInput]{selectInput/selectizeInput})} which are not
+dependent on information in the database}
 }
 \description{
 Create reactive for select/selectize input choices
