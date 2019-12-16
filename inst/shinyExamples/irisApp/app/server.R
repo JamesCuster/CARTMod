@@ -48,8 +48,8 @@ shinyServer(function(input, output, session) {
 
   callModule(dtModule, "iris",
              reactiveData,
-             dbTable = "iris",
-             filterData = irisFilters
+             dbTable = "iris"#,
+             #filterData = irisFilters
              )
 
 
