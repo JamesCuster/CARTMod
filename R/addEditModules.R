@@ -160,6 +160,10 @@ addModule <- function(input, output, session,
         shiny::removeModal()
       }
     }
+    else {
+      insertCallback(input, output, session, inputData$ids, db, dbTable)
+      shiny::removeModal()
+    }
   })
 
   # Observers to control duplicate modal action buttons
