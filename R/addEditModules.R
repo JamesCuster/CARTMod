@@ -76,6 +76,11 @@ addModuleUI <- function(id) {
 #' @param dbTable The database table the new data will be added to.
 #' @param reactiveData Reactive which stores all of the tables from the database
 #'   as seperate \code{data.frames}
+#' @param checkDuplicate Character vector of columns names (corresponds to input
+#'   ids) that should be checked in the database for duplication. Default value
+#'   is \code{NULL} meaning no variables are checked for duplication
+#' @param additionalInputs Additional shiny inputs to be dislayed in the
+#'   inputModal provided as a list.
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
@@ -84,7 +89,8 @@ addModuleUI <- function(id) {
 #'
 #' @export
 addModule <- function(input, output, session,
-                      modalTitle, inputData, db, dbTable, reactiveData) {
+                      modalTitle, inputData, db, dbTable, reactiveData,
+                      checkDuplicate = NULL, additionalInputs = NULL) {
   # controls what happens when add is pressed
   shiny::observeEvent(input$add, {
     # Checks inputData for select input types, if present, gathers the choices
@@ -92,10 +98,11 @@ addModule <- function(input, output, session,
       choices <- choicesReactive(inputData, reactiveData)
     }
 
-    # Creates modal
+    # Creates modal for inputs
     shiny::showModal(
       shiny::modalDialog(
         title = modalTitle,
+        additionalInputs,
         modalInputs(
           session = session,
           inputData = inputData,
@@ -112,9 +119,77 @@ addModule <- function(input, output, session,
 
   # Controls what happens when Save is pressed
   shiny::observeEvent(input$insert, {
+    # If checkDuplicates is not null, then check database for duplicates
+    if (!is.null(checkDuplicate)) {
+      possibleDuplicates <-
+        checkDuplicateFunction(input, output, session, checkDuplicate,
+                               dbTable, reactiveData)
+      # IF duplicates are found create datatable to display them
+      if (!is.null(possibleDuplicates)) {
+        # create datatable of duplicates
+        output$duplicate <- DT::renderDataTable(
+          DT::datatable(possibleDuplicates, options = list(dom = "t")),
+          server = TRUE
+        )
+        # display duplicate datatable in modal
+        shiny::showModal(
+          shiny::modalDialog(
+            size = "l",
+            title = "Possible Duplicate Entry",
+            shiny::tags$h5("Is this the entry you are trying to input?"),
+            DT::dataTableOutput(session$ns("duplicate")),
+            shiny::tags$h5("If yes, the entry already exists in the database.
+                           Please cancel addition."),
+            shiny::tags$h5("If no, proceed with addition."),
+            footer =
+              shiny::div(
+                shiny::actionButton(session$ns("cancelAdd"), "Cancel"),
+                shiny::actionButton(session$ns("continueAdd"), "Continue")
+              )
+          )
+        )
+      }
+      # If no duplicates are found then proceed with addition
+      else {
+        insertCallback(input, output, session, inputData$ids, db, dbTable)
+        shiny::removeModal()
+      }
+    }
+  })
+
+  # Observers to control duplicate modal action buttons
+  shiny::observeEvent(input$cancelAdd, {
+    shiny::removeModal()
+  })
+
+  shiny::observeEvent(input$continueAdd, {
     insertCallback(input, output, session, inputData$ids, db, dbTable)
     shiny::removeModal()
   })
+}
+
+
+#' Function to check if entry is duplicate
+#'
+#' This function checks the column names provided in \code{checkDuplicate} and
+#' checks the table provided in the \code{dbTable} argument if the new entry is
+#' a possible duplicate of a row that already exist in the database
+#'
+#' @inheritParams addModule
+#'
+#' @export
+checkDuplicateFunction <- function(input, output, session,
+                                   checkDuplicate, dbTable, reactiveData) {
+  possibleDuplicate <- lapply(checkDuplicate, function(x) {
+    value <- tolower(input[[x]])
+    fieldValues <- tolower(reactiveData[[dbTable]][[x]])
+    if (value %in% fieldValues) {
+      reactiveData[[dbTable]][which(value == fieldValues), ]
+    }
+  })
+  possibleDuplicate <- do.call(rbind, possibleDuplicate)
+  # remove any rows that were grabbed twice
+  possibleDuplicate[!duplicated(possibleDuplicate), ]
 }
 
 

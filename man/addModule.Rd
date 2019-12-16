@@ -12,7 +12,9 @@ addModule(
   inputData,
   db,
   dbTable,
-  reactiveData
+  reactiveData,
+  checkDuplicate = NULL,
+  additionalInputs = NULL
 )
 }
 \arguments{
@@ -57,6 +59,13 @@ database connection is saved to.}
 
 \item{reactiveData}{Reactive which stores all of the tables from the database
 as seperate \code{data.frames}}
+
+\item{checkDuplicate}{Character vector of columns names (corresponds to input
+ids) that should be checked in the database for duplication. Default value
+is \code{NULL} meaning no variables are checked for duplication}
+
+\item{additionalInputs}{Additional shiny inputs to be dislayed in the
+inputModal provided as a list.}
 }
 \value{
 Shiny \code{\link[shiny]{observeEvent}}'s which control actions when

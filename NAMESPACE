@@ -2,6 +2,7 @@
 
 export(addModule)
 export(addModuleUI)
+export(checkDuplicateFunction)
 export(choicesReactive)
 export(dtFilterUpdates)
 export(dtModule)
