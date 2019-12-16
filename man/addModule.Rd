@@ -14,7 +14,8 @@ addModule(
   dbTable,
   reactiveData,
   checkDuplicate = NULL,
-  additionalInputs = NULL
+  additionalInputs = NULL,
+  staticChoices = NULL
 )
 }
 \arguments{

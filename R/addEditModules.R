@@ -90,12 +90,12 @@ addModuleUI <- function(id) {
 #' @export
 addModule <- function(input, output, session,
                       modalTitle, inputData, db, dbTable, reactiveData,
-                      checkDuplicate = NULL, additionalInputs = NULL) {
+                      checkDuplicate = NULL, additionalInputs = NULL, staticChoices = NULL) {
   # controls what happens when add is pressed
   shiny::observeEvent(input$add, {
     # Checks inputData for select input types, if present, gathers the choices
     if (any(grepl("select", inputData$type))) {
-      choices <- choicesReactive(inputData, reactiveData)
+      choices <- choicesReactive(inputData, reactiveData, staticChoices)
     }
 
     # Creates modal for inputs

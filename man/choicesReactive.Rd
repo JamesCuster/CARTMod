@@ -4,7 +4,7 @@
 \alias{choicesReactive}
 \title{Create reactive for select/selectize input choices}
 \usage{
-choicesReactive(inputData, reactiveData)
+choicesReactive(inputData, reactiveData, staticChoices = NULL)
 }
 \arguments{
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
