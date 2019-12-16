@@ -2,15 +2,7 @@ CARTMod Notes
 
 Where I last left off
 
-I just added the additionalInputs parameter to the addModule function. This was done so that the user could provide additoinal UI components to the
-input modal that do not live in the inputData data.frame. This was add specifically to handle the fiscal year 19/20 distinction that is implmented in
-CART in order to manipulate how the database assigns project IDs to projects that were initiated in the FY19.
+addModule was implemented in for projects in CART.
 
 Next steps would be...
-To add the addModule to the projects and time functionality of CART.
-
-These steps have not been taken yet because additional work needs to be done first
-
-NEED TO FIGURE OUT HOW TO HANDLE STATIC CHOICES.
-
-
+To add the addModule to the time functionality of CART.
