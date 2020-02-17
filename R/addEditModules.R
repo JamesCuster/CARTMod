@@ -44,6 +44,7 @@ addModuleUI <- function(id) {
 #'   \code{\link[shiny]{callModule}} and can be ignored.
 #' @param modalTitle Character string for title to be displayed at the top of
 #'   the modal.
+#' @param modalUI Function that creates the modal UI.
 #' @param inputData a \code{data.frame} containing columns \code{ids, labels,
 #'   type, choicesTable, choicesValues, choicesLabels} which correspond to
 #'   \describe{
@@ -70,6 +71,13 @@ addModuleUI <- function(id) {
 #'       }
 #'     }
 #'   }
+#' @param reactiveData Reactive which stores all of the tables from the database
+#'   as seperate \code{data.frames}
+#' @param staticChoices \code{list} where choices for static selectize
+#'   inputs are defined.
+#' @param checkDuplicate character vector specifing which fields to check for
+#'   possible duplication. Default value is null, and no fields are checked for
+#'   duplicates
 #' @param db a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
 #'   returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 #'   database connection is saved to.
@@ -92,88 +100,30 @@ addModuleUI <- function(id) {
 #' @seealso \code{\link{addModuleUI}}
 #'
 #' @export
-addModule <- function(input, output, session,
-                      modalTitle, inputData, db, dbTable, reactiveData,
-                      checkDuplicate = NULL, additionalInputs = NULL,
-                      staticChoices = NULL) {
-  # controls what happens when add is pressed
+addModule <- function(input, output, session, modalTitle, modalUI, inputData,
+                      reactiveData, staticChoices = NULL, checkDuplicate = NULL,
+                      db, dbTable) {
+  # Currently modulUI is a function provided by user that creates the UI for the
+  # modal. I will want to modify this so that it can be a function, or a list of
+  # UI components. I don't know if this will actually be possible since it may
+  # cause some namespace naming issues.
+
+  # call modalModule
+  shiny::callModule(
+    CARTMod::modalModule,
+    id = "modal",
+    inputData,
+    reactiveData,
+    checkDuplicate,
+    db,
+    dbTable,
+    modalUI,
+    staticChoices
+  )
+
+  # Controls what happens when add is pressed
   shiny::observeEvent(input$add, {
-    # Checks inputData for select input types, if present, gathers the choices
-    if (any(grepl("select", inputData$type))) {
-      choices <- choicesReactive(inputData, reactiveData, staticChoices)
-    }
-
-    # Creates modal for inputs
-    shiny::showModal(
-      shiny::modalDialog(
-        title = modalTitle,
-        additionalInputs,
-        modalInputs(
-          session = session,
-          inputData = inputData,
-          choices = choices
-        ),
-        footer =
-          list(
-            shiny::modalButton("Cancel"),
-            shiny::actionButton(session$ns("insert"), "Save")
-          )
-      )
-    )
-  })
-
-  # Controls what happens when Save is pressed
-  shiny::observeEvent(input$insert, {
-    # If checkDuplicates is not null, then check database for duplicates
-    if (!is.null(checkDuplicate)) {
-      possibleDuplicates <-
-        checkDuplicateFunction(input, output, session, checkDuplicate,
-                               dbTable, reactiveData)
-      # IF duplicates are found create datatable to display them
-      if (!is.null(possibleDuplicates)) {
-        # create datatable of duplicates
-        output$duplicate <- DT::renderDataTable(
-          DT::datatable(possibleDuplicates, options = list(dom = "t")),
-          server = TRUE
-        )
-        # display duplicate datatable in modal
-        shiny::showModal(
-          shiny::modalDialog(
-            size = "l",
-            title = "Possible Duplicate Entry",
-            shiny::tags$h5("Is this the entry you are trying to input?"),
-            DT::dataTableOutput(session$ns("duplicate")),
-            shiny::tags$h5("If yes, the entry already exists in the database.
-                           Please cancel addition."),
-            shiny::tags$h5("If no, proceed with addition."),
-            footer =
-              shiny::div(
-                shiny::actionButton(session$ns("cancelAdd"), "Cancel"),
-                shiny::actionButton(session$ns("continueAdd"), "Continue")
-              )
-          )
-        )
-      }
-      # If no duplicates are found then proceed with addition
-      else {
-        insertCallback(input, output, session, inputData$ids, db, dbTable)
-        shiny::removeModal()
-      }
-    }
-    else {
-      insertCallback(input, output, session, inputData$ids, db, dbTable)
-      shiny::removeModal()
-    }
-  })
-
-  # Observers to control duplicate modal action buttons
-  shiny::observeEvent(input$cancelAdd, {
-    shiny::removeModal()
-  })
-
-  shiny::observeEvent(input$continueAdd, {
-    insertCallback(input, output, session, inputData$ids, db, dbTable)
-    shiny::removeModal()
+    CARTMod::modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
   })
 }
 
