@@ -73,6 +73,6 @@ database connection is saved to.}
 inputs are defined.}
 }
 \description{
-This function and \code{\link{modalModuleUI}} are used in conjunction to create
-the UI and server elements necessary to control the modal
+This function and \code{\link{modalModuleUI}} are used in conjunction to
+create the UI and server elements necessary to control the modal
 }

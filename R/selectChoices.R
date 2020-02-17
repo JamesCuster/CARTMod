@@ -15,7 +15,9 @@ choicesReactive <- function(inputData, reactiveData, staticChoices = NULL) {
             }
             else {
               valueLabel(
-                df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
+                df = reactiveData[[
+                  inputData[inputData$ids == x, "choicesTable"]
+                ]],
                 value = inputData[inputData$ids == x, "choicesValues"],
                 label = inputData[inputData$ids == x, "choicesLabels"])
             }
