@@ -110,7 +110,7 @@ addModule <- function(input, output, session, modalTitle, modalUI, inputData,
 
   # call modalModule
   shiny::callModule(
-    CARTMod::modalModule,
+    modalModule,
     id = "modal",
     inputData,
     reactiveData,
@@ -123,7 +123,7 @@ addModule <- function(input, output, session, modalTitle, modalUI, inputData,
 
   # Controls what happens when add is pressed
   shiny::observeEvent(input$add, {
-    CARTMod::modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
+    modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
   })
 }
 
