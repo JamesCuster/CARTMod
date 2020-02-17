@@ -179,6 +179,39 @@ modalModuleUI <- function(id, modalTitle) {
 }
 
 
+#' Create Modal: server function
+#'
+#' This function and \code{\link{modalModuleUI}} are used in conjunction to create
+#' the UI and server elements necessary to control the modal
+#'
+#' @inheritParams addModule
+#'
+#' @export
+modalModule <- function(input, output, session, inputData, reactiveData, checkDuplicate, db, dbTable, modalUI, staticChoices) {
+  # Get select(ize) choices and build modalUI
+  choices <- choicesReactive(inputData, reactiveData, staticChoices)
+  output$modalUI <- shiny::renderUI(modalUI(session$ns, choices = choices))
+
+  # Controls what happens when Save is pressed
+  shiny::observeEvent(input$insert, {
+    # If checkDuplicates is not null, then check database for duplicates
+    if (!is.null(checkDuplicate)) {
+      duplicateFound <- checkDuplicateFunction(input, output, session, checkDuplicate, reactiveData, inputData, db, dbTable)
+    }
+    if (is.null(checkDuplicate) || !duplicateFound) {
+      insertCallback(input, output, session, inputData$ids, db, dbTable)
+      shiny::removeModal()
+    }
+  })
+
+  # Observers to control duplicate modal action buttons
+  shiny::observeEvent(input$continueAdd, {
+    insertCallback(input, output, session, inputData$ids, db, dbTable)
+    shiny::removeModal()
+  })
+}
+
+
 #' Create list of shiny inputs for modal
 #'
 #' Takes a \code{data.frame} containing information about shiny inputs and
