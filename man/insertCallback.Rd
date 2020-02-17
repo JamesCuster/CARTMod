@@ -4,18 +4,9 @@
 \alias{insertCallback}
 \title{Insert data into database}
 \usage{
-insertCallback(input, output, session, ids, db, tab)
+insertCallback(ids, db, tab, session = shiny::getDefaultReactiveDomain())
 }
 \arguments{
-\item{input}{These parameters are handled by
-\code{\link[shiny]{callModule}} and can be ignored.}
-
-\item{output}{These parameters are handled by
-\code{\link[shiny]{callModule}} and can be ignored.}
-
-\item{session}{These parameters are handled by
-\code{\link[shiny]{callModule}} and can be ignored.}
-
 \item{ids}{Character vector of shiny input ids to be compiled and added to
 database.}
 
@@ -24,6 +15,9 @@ returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 database connection is saved to.}
 
 \item{tab}{The table in the database the inputs will be added to.}
+
+\item{session}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
 }
 \description{
 \code{insertCallback} takes shiny input values supplied by the user, collects

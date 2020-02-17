@@ -10,7 +10,10 @@
 #'
 #' @export
 #'
-insertCallback <- function(input, output, session, ids, db, tab) {
+insertCallback <-
+  function(ids, db, tab, session = shiny::getDefaultReactiveDomain()) {
+    input <- session$input
+
   # Creates data.frame of field values for new entry
   new <- lapply(ids,
                 function(x) {
