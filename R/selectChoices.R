@@ -27,7 +27,7 @@ choicesReactive <- function(inputData, reactiveData, staticChoices = NULL) {
     choices <- stats::setNames(choices, inputData$ids)
     return(choices)
   })
-  return(choicesReact())
+  return(choicesReact)
 }
 
 #' Define label/value pairs for select/selectize inputs
