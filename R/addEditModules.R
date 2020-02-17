@@ -167,14 +167,14 @@ modalModule <- function(input, output, session, inputData, reactiveData,
                                dbTable)
     }
     if (is.null(checkDuplicate) || !duplicateFound) {
-      insertCallback(inputData$ids, db, dbTable)
+      insertCallback(inputData, db, dbTable)
       shiny::removeModal()
     }
   })
 
   # Observers to control duplicate modal action buttons
   shiny::observeEvent(input$continueAdd, {
-    insertCallback(inputData$ids, db, dbTable)
+    insertCallback(inputData, db, dbTable)
     shiny::removeModal()
   })
 }
