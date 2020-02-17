@@ -163,8 +163,8 @@ modalModule <- function(input, output, session, inputData, reactiveData,
     # If checkDuplicates is not null, then check database for duplicates
     if (!is.null(checkDuplicate)) {
       duplicateFound <-
-        checkDuplicateFunction(input, output, session, checkDuplicate,
-                               reactiveData, inputData, db, dbTable)
+        checkDuplicateFunction(checkDuplicate, reactiveData, inputData, db,
+                               dbTable)
     }
     if (is.null(checkDuplicate) || !duplicateFound) {
       insertCallback(input, output, session, inputData$ids, db, dbTable)
@@ -188,8 +188,12 @@ modalModule <- function(input, output, session, inputData, reactiveData,
 #' @inheritParams addModule
 #'
 #' @export
-checkDuplicateFunction <- function(input, output, session, checkDuplicate,
-                                   reactiveData, inputData, db, dbTable) {
+checkDuplicateFunction <-
+  function(checkDuplicate, reactiveData, inputData, db, dbTable,
+           session = shiny::getDefaultReactiveDomain()) {
+
+  input <- session$input
+  output <- session$output
   # Check for duplicates in the columns provided in checkDuplicate
   possibleDuplicate <- lapply(checkDuplicate, function(x) {
     value <- tolower(input[[x]])

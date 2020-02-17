@@ -5,26 +5,15 @@
 \title{Check for duplicated entries before addition}
 \usage{
 checkDuplicateFunction(
-  input,
-  output,
-  session,
   checkDuplicate,
   reactiveData,
   inputData,
   db,
-  dbTable
+  dbTable,
+  session = shiny::getDefaultReactiveDomain()
 )
 }
 \arguments{
-\item{input}{These parameters are handled by
-\code{\link[shiny]{callModule}} and can be ignored.}
-
-\item{output}{These parameters are handled by
-\code{\link[shiny]{callModule}} and can be ignored.}
-
-\item{session}{These parameters are handled by
-\code{\link[shiny]{callModule}} and can be ignored.}
-
 \item{checkDuplicate}{character vector specifing which fields to check for
 possible duplication. Default value is null, and no fields are checked for
 duplicates}
@@ -64,6 +53,9 @@ returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 database connection is saved to.}
 
 \item{dbTable}{The database table the new data will be added to.}
+
+\item{session}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
 }
 \description{
 This function takes a character vector of fields to check in the database for
