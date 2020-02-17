@@ -82,17 +82,6 @@ addModuleUI <- function(id) {
 #'   returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 #'   database connection is saved to.
 #' @param dbTable The database table the new data will be added to.
-#' @param reactiveData Reactive which stores all of the tables from the database
-#'   as seperate \code{data.frames}
-#' @param checkDuplicate Character vector of columns names (corresponds to input
-#'   ids) that should be checked in the database for duplication. Default value
-#'   is \code{NULL} meaning no variables are checked for duplication
-#' @param additionalInputs Additional shiny inputs to be dislayed in the
-#'   inputModal provided as a list. Note: inputs used here will not be appened
-#'   with the module name prefix as the other inputs are
-#' @param staticChoices List object which contains the choices for
-#'   \code{\link[shiny:selectInput]{selectInput/selectizeInput})} which are not
-#'   dependent on information in the database
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
@@ -125,30 +114,6 @@ addModule <- function(input, output, session, modalTitle, modalUI, inputData,
   shiny::observeEvent(input$add, {
     modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
   })
-}
-
-
-#' Function to check if entry is duplicate
-#'
-#' This function checks the column names provided in \code{checkDuplicate} and
-#' checks the table provided in the \code{dbTable} argument if the new entry is
-#' a possible duplicate of a row that already exist in the database
-#'
-#' @inheritParams addModule
-#'
-#' @export
-checkDuplicateFunction <- function(input, output, session,
-                                   checkDuplicate, dbTable, reactiveData) {
-  possibleDuplicate <- lapply(checkDuplicate, function(x) {
-    value <- tolower(input[[x]])
-    fieldValues <- tolower(reactiveData[[dbTable]][[x]])
-    if (value %in% fieldValues) {
-      reactiveData[[dbTable]][which(value == fieldValues), ]
-    }
-  })
-  possibleDuplicate <- do.call(rbind, possibleDuplicate)
-  # remove any rows that were grabbed twice
-  possibleDuplicate[!duplicated(possibleDuplicate), ]
 }
 
 
@@ -275,8 +240,7 @@ checkDuplicateFunction <- function(input, output, session, checkDuplicate,
 #' additional optional parameters to create list of shiny inputs to be displayed
 #' in a modal
 #'
-#' @param session The \code{session} object passed to function given to
-#'   shinyServer. This should usually be \code{session = session}.
+#' @param ns namespace function passed from the calling environment.
 #' @inheritParams addModule
 #' @param values Optional argument to be used when the inputs are being
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
@@ -286,7 +250,8 @@ checkDuplicateFunction <- function(input, output, session, checkDuplicate,
 #'   \code{\link[shiny:selectInput]{selectizeInput}} inputs.
 #'
 #' @export
-modalInputs <- function(session, inputData, values, choices) {
+modalInputs <- function(ns, inputData, values, choices) {
+  inputData <- inputData[inputData$type != "skip", ]
   fields <-
     apply(
       inputData, 1,
@@ -297,42 +262,42 @@ modalInputs <- function(session, inputData, values, choices) {
           NULL
         }
         else if (x["type"] == "textInput") {
-          shiny::textInput(inputId  = session$ns(x["ids"]),
-                    label = x["labels"],
-                    value = value,
-                    width = 400)
+          shiny::textInput(inputId  = ns(x["ids"]),
+                           label = x["labels"],
+                           value = value,
+                           width = 400)
         }
         else if (x["type"] == "selectizeInput") {
-          shiny::selectizeInput(inputId  = session$ns(x["ids"]),
-                         label = x["labels"],
-                         choices = c("", choices[[x["ids"]]]),
-                         selected = value,
-                         width = 400)
+          shiny::selectizeInput(inputId  = ns(x["ids"]),
+                                label = x["labels"],
+                                choices = c("", choices[[x["ids"]]]),
+                                selected = value,
+                                width = 400)
         }
         else if (x["type"] == "selectInput") {
-          shiny::selectInput(inputId  = session$ns(x["ids"]),
-                      label = x["labels"],
-                      choices = c("", choices[[x["ids"]]]),
-                      width = 400)
+          shiny::selectInput(inputId  = ns(x["ids"]),
+                             label = x["labels"],
+                             choices = c("", choices[[x["ids"]]]),
+                             width = 400)
         }
         else if (x["type"] == "textAreaInput") {
-          shiny::textAreaInput(inputId  = session$ns(x["ids"]),
-                        label = x["labels"],
-                        value = value,
-                        width = "400px",
-                        height = "102px")
+          shiny::textAreaInput(inputId  = ns(x["ids"]),
+                               label = x["labels"],
+                               value = value,
+                               width = "400px",
+                               height = "102px")
         }
         else if (x["type"] == "dateInput") {
           value <- if (value == "") as.Date(NA) else value
-          shiny::dateInput(inputId  = session$ns(x["ids"]),
-                    label = x["labels"],
-                    value = value,
-                    width = 400)
+          shiny::dateInput(inputId  = ns(x["ids"]),
+                           label = x["labels"],
+                           value = value,
+                           width = 400)
         }
         else if (x["type"] == "actionButton") {
-          shiny::actionButton(inputId  = session$ns(x["ids"]),
-                       label = x["labels"],
-                       style = "margin-left: 20px;
+          shiny::actionButton(inputId  = ns(x["ids"]),
+                              label = x["labels"],
+                              style = "margin-left: 20px;
                                 margin-top: 24px;
                                 height: 34px;")
         }
