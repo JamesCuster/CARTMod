@@ -152,6 +152,32 @@ checkDuplicateFunction <- function(input, output, session,
 }
 
 
+#' Create Modal: UI function
+#'
+#' This function and \code{\link{modalModule}} are used in conjunction to create
+#' the UI and server elements necessary to control the modal
+#'
+#' @param id character name for the namespace of the module
+#' @inheritParams addModule
+#'
+#' @export
+modalModuleUI <- function(id, modalTitle) {
+  ns <- shiny::NS(id)
+
+  # Generate and display modal
+  shiny::showModal(
+    shiny::modalDialog(
+      title = modalTitle,
+      shiny::uiOutput(ns("modalUI")),
+      footer =
+        list(
+          shiny::modalButton("Cancel"),
+          shiny::actionButton(ns("insert"), "Save")
+        )
+    )
+  )
+}
+
 
 #' Create list of shiny inputs for modal
 #'
