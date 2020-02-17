@@ -2,15 +2,17 @@
 % Please edit documentation in R/addEditModules.R
 \name{checkDuplicateFunction}
 \alias{checkDuplicateFunction}
-\title{Function to check if entry is duplicate}
+\title{Check for duplicated entries before addition}
 \usage{
 checkDuplicateFunction(
   input,
   output,
   session,
   checkDuplicate,
-  dbTable,
-  reactiveData
+  reactiveData,
+  inputData,
+  db,
+  dbTable
 )
 }
 \arguments{
@@ -23,17 +25,47 @@ checkDuplicateFunction(
 \item{session}{These parameters are handled by
 \code{\link[shiny]{callModule}} and can be ignored.}
 
-\item{checkDuplicate}{Character vector of columns names (corresponds to input
-ids) that should be checked in the database for duplication. Default value
-is \code{NULL} meaning no variables are checked for duplication}
-
-\item{dbTable}{The database table the new data will be added to.}
+\item{checkDuplicate}{character vector specifing which fields to check for
+possible duplication. Default value is null, and no fields are checked for
+duplicates}
 
 \item{reactiveData}{Reactive which stores all of the tables from the database
 as seperate \code{data.frames}}
+
+\item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
+  type, choicesTable, choicesValues, choicesLabels} which correspond to
+  \describe{
+    \item{\code{ids}}{The field names in the database. These ids will also be
+    used as the inputId for shiny inputs.}
+
+    \item{\code{labels}}{These are character values which will be used as the
+    label for shiny inputs and be displayed above the input in the UI.}
+
+    \item{\code{type}}{The type of shiny input to be used.}
+
+    \item{\code{choicesTable, choicesValues, choicesLabels}}{Only used if the
+    desired input has predefined choices
+    (\code{\link[shiny:selectInput]{selectInput/selectizeInput})}. If neither
+    of these inputs are used, then the values should be \code{NA}. If one of
+    these inputs is used then:
+      \describe{
+        \item{\code{choicesTable}}{Is the table in the database where the
+        choices for the given input are.}
+        \item{\code{choicesValues}}{Is the column in the table which stores
+        the numeric identifier for the choice}
+        \item{\code{choicesLabels}}{Is the column in the table which stores
+        the character name for the choices}
+      }
+    }
+  }}
+
+\item{db}{a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
+returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
+database connection is saved to.}
+
+\item{dbTable}{The database table the new data will be added to.}
 }
 \description{
-This function checks the column names provided in \code{checkDuplicate} and
-checks the table provided in the \code{dbTable} argument if the new entry is
-a possible duplicate of a row that already exist in the database
+This function takes a character vector of fields to check in the database for
+a possible duplication before an addition occurs
 }

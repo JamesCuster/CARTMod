@@ -212,6 +212,63 @@ modalModule <- function(input, output, session, inputData, reactiveData, checkDu
 }
 
 
+#' Check for duplicated entries before addition
+#'
+#' This function takes a character vector of fields to check in the database for
+#' a possible duplication before an addition occurs
+#'
+#' @inheritParams addModule
+#'
+#' @export
+checkDuplicateFunction <- function(input, output, session, checkDuplicate,
+                                   reactiveData, inputData, db, dbTable) {
+  # Check for duplicates in the columns provided in checkDuplicate
+  possibleDuplicate <- lapply(checkDuplicate, function(x) {
+    value <- tolower(input[[x]])
+    fieldValues <- tolower(reactiveData[[dbTable]][[x]])
+    if (value %in% fieldValues) {
+      reactiveData[[dbTable]][which(value == fieldValues), ]
+    }
+  })
+  # Gather possible duplicates and remove any rows that were grabbed twice
+  possibleDuplicate <- do.call(rbind, possibleDuplicate)
+  possibleDuplicate <- possibleDuplicate[!duplicated(possibleDuplicate), ]
+
+
+  # If duplicates are found, display modal and return TRUE, if not return FALSE
+  if (!is.null(possibleDuplicate)) {
+    # create datatable of duplicates
+    output$duplicate <- DT::renderDataTable(
+      DT::datatable(possibleDuplicate, options = list(dom = "t")),
+      server = TRUE
+    )
+
+    # display duplicate datatable in modal
+    shiny::showModal(
+      shiny::modalDialog(
+        size = "l",
+        title = "Possible Duplicate Entry",
+        shiny::tags$h5("Is this the entry you are trying to input?"),
+        DT::dataTableOutput(session$ns("duplicate")),
+        shiny::tags$h5("If yes, the entry already exists in the database.
+                        Please cancel addition."),
+        shiny::tags$h5("If no, proceed with addition."),
+        footer =
+          shiny::div(
+            # shiny::actionButton(session$ns("cancelAdd"), "Cancel"),
+            shiny::modalButton("Cancel"),
+            shiny::actionButton(session$ns("continueAdd"), "Continue")
+          )
+      )
+    )
+    duplicatesFound <- TRUE
+  }
+  else {
+    duplicatesFound <- FALSE
+  }
+  return(duplicatesFound)
+}
+
 #' Create list of shiny inputs for modal
 #'
 #' Takes a \code{data.frame} containing information about shiny inputs and
