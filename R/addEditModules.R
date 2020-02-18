@@ -156,7 +156,7 @@ modalModule <- function(input, output, session, inputData, reactiveData,
                         checkDuplicate, db, dbTable, modalUI, staticChoices) {
   # Get select(ize) choices and build modalUI
   choices <- choicesReactive(inputData, reactiveData, staticChoices)
-  output$modalUI <- shiny::renderUI(modalUI(session$ns, choices = choices))
+  output$modalUI <- shiny::renderUI(modalUI(choices = choices))
 
   # Controls what happens when Save is pressed
   shiny::observeEvent(input$insert, {
@@ -257,7 +257,9 @@ checkDuplicateFunction <-
 #'   \code{\link[shiny:selectInput]{selectizeInput}} inputs.
 #'
 #' @export
-modalInputs <- function(ns, inputData, values, choices) {
+modalInputs <- function(inputData, values, choices,
+                        session = shiny::getDefaultReactiveDomain()) {
+  ns <- session$ns
   inputData <- inputData[inputData$type != "skip", ]
   fields <-
     apply(
