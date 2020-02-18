@@ -97,9 +97,9 @@ addModule <- function(input, output, session, modalTitle, modalUI, inputData,
   # UI components. I don't know if this will actually be possible since it may
   # cause some namespace naming issues.
 
-  # call modalModule
+  # call addModal
   shiny::callModule(
-    modalModule,
+    addModal,
     id = "modal",
     inputData,
     reactiveData,
@@ -112,21 +112,21 @@ addModule <- function(input, output, session, modalTitle, modalUI, inputData,
 
   # Controls what happens when add is pressed
   shiny::observeEvent(input$add, {
-    modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
+    addModalUI(session$ns("modal"), modalTitle = modalTitle)
   })
 }
 
 
 #' Create Modal: UI function
 #'
-#' This function and \code{\link{modalModule}} are used in conjunction to create
+#' This function and \code{\link{addModal}} are used in conjunction to create
 #' the UI and server elements necessary to control the modal
 #'
 #' @param id character name for the namespace of the module
 #' @inheritParams addModule
 #'
 #' @export
-modalModuleUI <- function(id, modalTitle) {
+addModalUI <- function(id, modalTitle) {
   ns <- shiny::NS(id)
 
   # Generate and display modal
@@ -146,13 +146,13 @@ modalModuleUI <- function(id, modalTitle) {
 
 #' Create Modal: server function
 #'
-#' This function and \code{\link{modalModuleUI}} are used in conjunction to
+#' This function and \code{\link{addModalUI}} are used in conjunction to
 #' create the UI and server elements necessary to control the modal
 #'
 #' @inheritParams addModule
 #'
 #' @export
-modalModule <- function(input, output, session, inputData, reactiveData,
+addModal <- function(input, output, session, inputData, reactiveData,
                         checkDuplicate, db, dbTable, modalUI, staticChoices) {
   # Get select(ize) choices and build modalUI
   choices <- choicesReactive(inputData, reactiveData, staticChoices)
