@@ -9,13 +9,13 @@ addModule(
   output,
   session,
   modalTitle,
+  modalUI,
   inputData,
-  db,
-  dbTable,
   reactiveData,
+  staticChoices = NULL,
   checkDuplicate = NULL,
-  additionalInputs = NULL,
-  staticChoices = NULL
+  db,
+  dbTable
 )
 }
 \arguments{
@@ -24,6 +24,8 @@ addModule(
 
 \item{modalTitle}{Character string for title to be displayed at the top of
 the modal.}
+
+\item{modalUI}{Function that creates the modal UI.}
 
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
   type, choicesTable, choicesValues, choicesLabels} which correspond to
@@ -52,26 +54,21 @@ the modal.}
     }
   }}
 
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
+
+\item{staticChoices}{\code{list} where choices for static selectize
+inputs are defined.}
+
+\item{checkDuplicate}{character vector specifing which fields to check for
+possible duplication. Default value is null, and no fields are checked for
+duplicates}
+
 \item{db}{a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
 returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 database connection is saved to.}
 
 \item{dbTable}{The database table the new data will be added to.}
-
-\item{reactiveData}{Reactive which stores all of the tables from the database
-as seperate \code{data.frames}}
-
-\item{checkDuplicate}{Character vector of columns names (corresponds to input
-ids) that should be checked in the database for duplication. Default value
-is \code{NULL} meaning no variables are checked for duplication}
-
-\item{additionalInputs}{Additional shiny inputs to be dislayed in the
-inputModal provided as a list. Note: inputs used here will not be appened
-with the module name prefix as the other inputs are}
-
-\item{staticChoices}{List object which contains the choices for
-\code{\link[shiny:selectInput]{selectInput/selectizeInput})} which are not
-dependent on information in the database}
 }
 \value{
 Shiny \code{\link[shiny]{observeEvent}}'s which control actions when

@@ -4,13 +4,13 @@
 #' them into a \code{data.frame} and then appends them into a database
 #'
 #' @inheritParams addModule
-#' @param ids Character vector of shiny input ids to be compiled and added to
-#'   database.
-#' @param tab The table in the database the inputs will be added to.
 #'
 #' @export
 #'
-insertCallback <- function(input, output, session, ids, db, tab) {
+insertCallback <-
+  function(inputData, db, dbTable, session = shiny::getDefaultReactiveDomain()) {
+    input <- session$input
+    ids <- inputData$ids
   # Creates data.frame of field values for new entry
   new <- lapply(ids,
                 function(x) {
@@ -35,5 +35,5 @@ insertCallback <- function(input, output, session, ids, db, tab) {
   new <- as.data.frame(new)
 
   # inserts new entry into database
-  DBI::dbWriteTable(db, tab, new, append = TRUE)
+  DBI::dbWriteTable(db, dbTable, new, append = TRUE)
 }

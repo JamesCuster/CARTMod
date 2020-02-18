@@ -4,11 +4,10 @@
 \alias{modalInputs}
 \title{Create list of shiny inputs for modal}
 \usage{
-modalInputs(session, inputData, values, choices)
+modalInputs(ns, inputData, values, choices)
 }
 \arguments{
-\item{session}{The \code{session} object passed to function given to
-shinyServer. This should usually be \code{session = session}.}
+\item{ns}{namespace function passed from the calling environment.}
 
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
   type, choicesTable, choicesValues, choicesLabels} which correspond to

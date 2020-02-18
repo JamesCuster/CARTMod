@@ -39,32 +39,48 @@ shinyServer(function(input, output, session) {
   })
 
   # iris --------------------------------------------------------------------
+  irisUI <- function(ns, choices = NULL) {
+    # Both options below work, which is what I wanted.
+    modalInputs(ns,
+                inputData = irisInputs,
+                choices = choices())
+    # list(
+    #   selectizeInput(ns("Species"), "Species",
+    #                  choices = reactiveData$flowers$flowerName),
+    #   selectizeInput(ns("smell"), "Smell", choices = irisStaticChoices$smell)
+    # )
+  }
   callModule(addModule, "iris",
              modalTitle = "Add Iris",
+             modalUI = irisUI,
              inputData = irisInputs,
-             db = irisdb,
-             dbTable = "iris",
              reactiveData = reactiveData,
-             staticChoices = irisStaticChoices)
+             staticChoices = irisStaticChoices,
+             dbTable = "iris",
+             db = irisdb)
 
   callModule(dtModule, "iris",
              reactiveData,
-             dbTable = "iris"#,
-             #filterData = irisFilters
-             )
+             dbTable = "iris")
 
 
 
   # Flowers -----------------------------------------------------------------
+  flowersUI <- function(ns, choices = NULL) {
+    modalInputs(ns,
+                inputData = flowerInputs,
+                choices = choices)
+  }
+
   callModule(addModule, "flowers",
-             modalTitle = "Add Flower",
+             modalTitle = "Add Flowers",
+             modalUI = flowersUI,
              inputData = flowerInputs,
-             db = irisdb,
-             dbTable = "flowers",
              reactiveData = reactiveData,
-             checkDuplicate = c("flowerName", "flowerName2"),
-             additionalInputs = list(textInput("test", "test"),
-                                     textInput("test2", "test2")))
+             checkDuplicate = c("flowerName"),
+             dbTable = "flowers",
+             db = irisdb)
+
 
   callModule(dtModule, "flowers",
              reactiveData,

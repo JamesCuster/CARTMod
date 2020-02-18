@@ -15,7 +15,9 @@ choicesReactive <- function(inputData, reactiveData, staticChoices = NULL) {
             }
             else {
               valueLabel(
-                df = reactiveData[[inputData[inputData$ids == x, "choicesTable"]]],
+                df = reactiveData[[
+                  inputData[inputData$ids == x, "choicesTable"]
+                ]],
                 value = inputData[inputData$ids == x, "choicesValues"],
                 label = inputData[inputData$ids == x, "choicesLabels"])
             }
@@ -27,7 +29,7 @@ choicesReactive <- function(inputData, reactiveData, staticChoices = NULL) {
     choices <- stats::setNames(choices, inputData$ids)
     return(choices)
   })
-  return(choicesReact())
+  return(choicesReact)
 }
 
 #' Define label/value pairs for select/selectize inputs

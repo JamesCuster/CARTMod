@@ -44,6 +44,7 @@ addModuleUI <- function(id) {
 #'   \code{\link[shiny]{callModule}} and can be ignored.
 #' @param modalTitle Character string for title to be displayed at the top of
 #'   the modal.
+#' @param modalUI Function that creates the modal UI.
 #' @param inputData a \code{data.frame} containing columns \code{ids, labels,
 #'   type, choicesTable, choicesValues, choicesLabels} which correspond to
 #'   \describe{
@@ -70,21 +71,17 @@ addModuleUI <- function(id) {
 #'       }
 #'     }
 #'   }
+#' @param reactiveData Reactive which stores all of the tables from the database
+#'   as seperate \code{data.frames}
+#' @param staticChoices \code{list} where choices for static selectize
+#'   inputs are defined.
+#' @param checkDuplicate character vector specifing which fields to check for
+#'   possible duplication. Default value is null, and no fields are checked for
+#'   duplicates
 #' @param db a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
 #'   returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 #'   database connection is saved to.
 #' @param dbTable The database table the new data will be added to.
-#' @param reactiveData Reactive which stores all of the tables from the database
-#'   as seperate \code{data.frames}
-#' @param checkDuplicate Character vector of columns names (corresponds to input
-#'   ids) that should be checked in the database for duplication. Default value
-#'   is \code{NULL} meaning no variables are checked for duplication
-#' @param additionalInputs Additional shiny inputs to be dislayed in the
-#'   inputModal provided as a list. Note: inputs used here will not be appened
-#'   with the module name prefix as the other inputs are
-#' @param staticChoices List object which contains the choices for
-#'   \code{\link[shiny:selectInput]{selectInput/selectizeInput})} which are not
-#'   dependent on information in the database
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
@@ -92,103 +89,112 @@ addModuleUI <- function(id) {
 #' @seealso \code{\link{addModuleUI}}
 #'
 #' @export
-addModule <- function(input, output, session,
-                      modalTitle, inputData, db, dbTable, reactiveData,
-                      checkDuplicate = NULL, additionalInputs = NULL,
-                      staticChoices = NULL) {
-  # controls what happens when add is pressed
-  shiny::observeEvent(input$add, {
-    # Checks inputData for select input types, if present, gathers the choices
-    if (any(grepl("select", inputData$type))) {
-      choices <- choicesReactive(inputData, reactiveData, staticChoices)
-    }
+addModule <- function(input, output, session, modalTitle, modalUI, inputData,
+                      reactiveData, staticChoices = NULL, checkDuplicate = NULL,
+                      db, dbTable) {
+  # Currently modulUI is a function provided by user that creates the UI for the
+  # modal. I will want to modify this so that it can be a function, or a list of
+  # UI components. I don't know if this will actually be possible since it may
+  # cause some namespace naming issues.
 
-    # Creates modal for inputs
-    shiny::showModal(
-      shiny::modalDialog(
-        title = modalTitle,
-        additionalInputs,
-        modalInputs(
-          session = session,
-          inputData = inputData,
-          choices = choices
-        ),
-        footer =
-          list(
-            shiny::modalButton("Cancel"),
-            shiny::actionButton(session$ns("insert"), "Save")
-          )
-      )
-    )
+  # call modalModule
+  shiny::callModule(
+    modalModule,
+    id = "modal",
+    inputData,
+    reactiveData,
+    checkDuplicate,
+    db,
+    dbTable,
+    modalUI,
+    staticChoices
+  )
+
+  # Controls what happens when add is pressed
+  shiny::observeEvent(input$add, {
+    modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
   })
+}
+
+
+#' Create Modal: UI function
+#'
+#' This function and \code{\link{modalModule}} are used in conjunction to create
+#' the UI and server elements necessary to control the modal
+#'
+#' @param id character name for the namespace of the module
+#' @inheritParams addModule
+#'
+#' @export
+modalModuleUI <- function(id, modalTitle) {
+  ns <- shiny::NS(id)
+
+  # Generate and display modal
+  shiny::showModal(
+    shiny::modalDialog(
+      title = modalTitle,
+      shiny::uiOutput(ns("modalUI")),
+      footer =
+        list(
+          shiny::modalButton("Cancel"),
+          shiny::actionButton(ns("insert"), "Save")
+        )
+    )
+  )
+}
+
+
+#' Create Modal: server function
+#'
+#' This function and \code{\link{modalModuleUI}} are used in conjunction to
+#' create the UI and server elements necessary to control the modal
+#'
+#' @inheritParams addModule
+#'
+#' @export
+modalModule <- function(input, output, session, inputData, reactiveData,
+                        checkDuplicate, db, dbTable, modalUI, staticChoices) {
+  # Get select(ize) choices and build modalUI
+  choices <- choicesReactive(inputData, reactiveData, staticChoices)
+  output$modalUI <- shiny::renderUI(modalUI(session$ns, choices = choices))
 
   # Controls what happens when Save is pressed
   shiny::observeEvent(input$insert, {
     # If checkDuplicates is not null, then check database for duplicates
     if (!is.null(checkDuplicate)) {
-      possibleDuplicates <-
-        checkDuplicateFunction(input, output, session, checkDuplicate,
-                               dbTable, reactiveData)
-      # IF duplicates are found create datatable to display them
-      if (!is.null(possibleDuplicates)) {
-        # create datatable of duplicates
-        output$duplicate <- DT::renderDataTable(
-          DT::datatable(possibleDuplicates, options = list(dom = "t")),
-          server = TRUE
-        )
-        # display duplicate datatable in modal
-        shiny::showModal(
-          shiny::modalDialog(
-            size = "l",
-            title = "Possible Duplicate Entry",
-            shiny::tags$h5("Is this the entry you are trying to input?"),
-            DT::dataTableOutput(session$ns("duplicate")),
-            shiny::tags$h5("If yes, the entry already exists in the database.
-                           Please cancel addition."),
-            shiny::tags$h5("If no, proceed with addition."),
-            footer =
-              shiny::div(
-                shiny::actionButton(session$ns("cancelAdd"), "Cancel"),
-                shiny::actionButton(session$ns("continueAdd"), "Continue")
-              )
-          )
-        )
-      }
-      # If no duplicates are found then proceed with addition
-      else {
-        insertCallback(input, output, session, inputData$ids, db, dbTable)
-        shiny::removeModal()
-      }
+      duplicateFound <-
+        checkDuplicateFunction(checkDuplicate, reactiveData, inputData, db,
+                               dbTable)
     }
-    else {
-      insertCallback(input, output, session, inputData$ids, db, dbTable)
+    if (is.null(checkDuplicate) || !duplicateFound) {
+      insertCallback(inputData, db, dbTable)
       shiny::removeModal()
     }
   })
 
   # Observers to control duplicate modal action buttons
-  shiny::observeEvent(input$cancelAdd, {
-    shiny::removeModal()
-  })
-
   shiny::observeEvent(input$continueAdd, {
-    insertCallback(input, output, session, inputData$ids, db, dbTable)
+    insertCallback(inputData, db, dbTable)
     shiny::removeModal()
   })
 }
 
 
-#' Function to check if entry is duplicate
+#' Check for duplicated entries before addition
 #'
-#' This function checks the column names provided in \code{checkDuplicate} and
-#' checks the table provided in the \code{dbTable} argument if the new entry is
-#' a possible duplicate of a row that already exist in the database
+#' This function takes a character vector of fields to check in the database for
+#' a possible duplication before an addition occurs
 #'
 #' @inheritParams addModule
 #'
 #' @export
-checkDuplicateFunction <- function(input, output, session,
-                                   checkDuplicate, dbTable, reactiveData) {
+checkDuplicateFunction <-
+  function(checkDuplicate, reactiveData, inputData, db, dbTable,
+           session = shiny::getDefaultReactiveDomain()) {
+
+  input <- session$input
+  output <- session$output
+  # Check for duplicates in the columns provided in checkDuplicate
   possibleDuplicate <- lapply(checkDuplicate, function(x) {
     value <- tolower(input[[x]])
     fieldValues <- tolower(reactiveData[[dbTable]][[x]])
@@ -196,12 +202,44 @@ checkDuplicateFunction <- function(input, output, session,
       reactiveData[[dbTable]][which(value == fieldValues), ]
     }
   })
+  # Gather possible duplicates and remove any rows that were grabbed twice
   possibleDuplicate <- do.call(rbind, possibleDuplicate)
-  # remove any rows that were grabbed twice
-  possibleDuplicate[!duplicated(possibleDuplicate), ]
+  possibleDuplicate <- possibleDuplicate[!duplicated(possibleDuplicate), ]
+
+
+  # If duplicates are found, display modal and return TRUE, if not return FALSE
+  if (!is.null(possibleDuplicate)) {
+    # create datatable of duplicates
+    output$duplicate <- DT::renderDataTable(
+      DT::datatable(possibleDuplicate, options = list(dom = "t")),
+      server = TRUE
+    )
+
+    # display duplicate datatable in modal
+    shiny::showModal(
+      shiny::modalDialog(
+        size = "l",
+        title = "Possible Duplicate Entry",
+        shiny::tags$h5("Is this the entry you are trying to input?"),
+        DT::dataTableOutput(session$ns("duplicate")),
+        shiny::tags$h5("If yes, the entry already exists in the database.
+                        Please cancel addition."),
+        shiny::tags$h5("If no, proceed with addition."),
+        footer =
+          shiny::div(
+            # shiny::actionButton(session$ns("cancelAdd"), "Cancel"),
+            shiny::modalButton("Cancel"),
+            shiny::actionButton(session$ns("continueAdd"), "Continue")
+          )
+      )
+    )
+    duplicatesFound <- TRUE
+  }
+  else {
+    duplicatesFound <- FALSE
+  }
+  return(duplicatesFound)
 }
-
-
 
 #' Create list of shiny inputs for modal
 #'
@@ -209,8 +247,7 @@ checkDuplicateFunction <- function(input, output, session,
 #' additional optional parameters to create list of shiny inputs to be displayed
 #' in a modal
 #'
-#' @param session The \code{session} object passed to function given to
-#'   shinyServer. This should usually be \code{session = session}.
+#' @param ns namespace function passed from the calling environment.
 #' @inheritParams addModule
 #' @param values Optional argument to be used when the inputs are being
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
@@ -220,7 +257,8 @@ checkDuplicateFunction <- function(input, output, session,
 #'   \code{\link[shiny:selectInput]{selectizeInput}} inputs.
 #'
 #' @export
-modalInputs <- function(session, inputData, values, choices) {
+modalInputs <- function(ns, inputData, values, choices) {
+  inputData <- inputData[inputData$type != "skip", ]
   fields <-
     apply(
       inputData, 1,
@@ -231,42 +269,42 @@ modalInputs <- function(session, inputData, values, choices) {
           NULL
         }
         else if (x["type"] == "textInput") {
-          shiny::textInput(inputId  = session$ns(x["ids"]),
-                    label = x["labels"],
-                    value = value,
-                    width = 400)
+          shiny::textInput(inputId  = ns(x["ids"]),
+                           label = x["labels"],
+                           value = value,
+                           width = 400)
         }
         else if (x["type"] == "selectizeInput") {
-          shiny::selectizeInput(inputId  = session$ns(x["ids"]),
-                         label = x["labels"],
-                         choices = c("", choices[[x["ids"]]]),
-                         selected = value,
-                         width = 400)
+          shiny::selectizeInput(inputId  = ns(x["ids"]),
+                                label = x["labels"],
+                                choices = c("", choices[[x["ids"]]]),
+                                selected = value,
+                                width = 400)
         }
         else if (x["type"] == "selectInput") {
-          shiny::selectInput(inputId  = session$ns(x["ids"]),
-                      label = x["labels"],
-                      choices = c("", choices[[x["ids"]]]),
-                      width = 400)
+          shiny::selectInput(inputId  = ns(x["ids"]),
+                             label = x["labels"],
+                             choices = c("", choices[[x["ids"]]]),
+                             width = 400)
         }
         else if (x["type"] == "textAreaInput") {
-          shiny::textAreaInput(inputId  = session$ns(x["ids"]),
-                        label = x["labels"],
-                        value = value,
-                        width = "400px",
-                        height = "102px")
+          shiny::textAreaInput(inputId  = ns(x["ids"]),
+                               label = x["labels"],
+                               value = value,
+                               width = "400px",
+                               height = "102px")
         }
         else if (x["type"] == "dateInput") {
           value <- if (value == "") as.Date(NA) else value
-          shiny::dateInput(inputId  = session$ns(x["ids"]),
-                    label = x["labels"],
-                    value = value,
-                    width = 400)
+          shiny::dateInput(inputId  = ns(x["ids"]),
+                           label = x["labels"],
+                           value = value,
+                           width = 400)
         }
         else if (x["type"] == "actionButton") {
-          shiny::actionButton(inputId  = session$ns(x["ids"]),
-                       label = x["labels"],
-                       style = "margin-left: 20px;
+          shiny::actionButton(inputId  = ns(x["ids"]),
+                              label = x["labels"],
+                              style = "margin-left: 20px;
                                 margin-top: 24px;
                                 height: 34px;")
         }

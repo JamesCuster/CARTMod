@@ -37,9 +37,8 @@ choicesReactive(inputData, reactiveData, staticChoices = NULL)
 \item{reactiveData}{Reactive which stores all of the tables from the database
 as seperate \code{data.frames}}
 
-\item{staticChoices}{List object which contains the choices for
-\code{\link[shiny:selectInput]{selectInput/selectizeInput})} which are not
-dependent on information in the database}
+\item{staticChoices}{\code{list} where choices for static selectize
+inputs are defined.}
 }
 \description{
 Create reactive for select/selectize input choices
