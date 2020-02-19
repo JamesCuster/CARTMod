@@ -115,7 +115,7 @@ addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputD
 
   # Controls what happens when add is pressed
   shiny::observeEvent(input$add, {
-    addModalUI(session$ns("modal"), addTitle = addTitle)
+    addModalUI(session$ns("addModal"), addTitle = addTitle)
   })
 
 
