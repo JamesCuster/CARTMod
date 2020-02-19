@@ -250,7 +250,7 @@ editModal <- function(input, output, session, inputData, reactiveData,
                       checkDuplicate, db, dbTable, modalUI, staticChoices, dtRow) {
   # Get select(ize) choices and input values of selected row then build modalUI
   choices <- choicesReactive(inputData, reactiveData, staticChoices)
-  values <- shinny::reactive({
+  values <- shiny::reactive({
     selectedRow <- dtRow()
     reactiveData$flowers[selectedRow, ]
   })
@@ -258,7 +258,7 @@ editModal <- function(input, output, session, inputData, reactiveData,
 
   # Controls what happens when Update is pressed
   shiny::observeEvent(input$update, {
-    updateCallback(inputData, db, dbTable, dtRow)
+    updateCallback(inputData, db, dbTable, reactiveData, dtRow)
     shiny::removeModal()
   })
 }
