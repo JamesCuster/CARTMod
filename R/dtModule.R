@@ -1,6 +1,6 @@
 #' Add reactive datatable: UI function
 #'
-#' @inheritParams addModuleUI
+#' @inheritParams addEditUI
 #' @param filterData hello
 #'
 #' @export
@@ -18,8 +18,8 @@ dtModuleUI <- function(id, filterData = NULL) {
           } else {
             style <- "margin-left: 20px;"
           }
-          div(
-            selectizeInput(
+          shiny::div(
+            shiny::selectizeInput(
               inputId = ns(x["ids"]),
               label = x["labels"],
               choices = "All"
@@ -33,7 +33,7 @@ dtModuleUI <- function(id, filterData = NULL) {
   }
 
   list(
-    div(
+    shiny::div(
       filters,
       style = "display: flex; align-items: flex-start;"
     ),
@@ -45,7 +45,7 @@ dtModuleUI <- function(id, filterData = NULL) {
 
 #' Add reactive datatable: server function
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #' @inheritParams dtModuleUI
 #'
 #' @export
@@ -108,17 +108,20 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
 
 #' Update filter choices
 #'
+#' @inheritParams addEdit
+#' @param filterData Hello
+#'
 #' @export
 dtFilterUpdates <- function(input, output, session, filterData, reactiveData) {
   filtersList <- split(filterData, filterData$choicesTable)
   lapply(
     filtersList,
     function(x) {
-      observeEvent(reactiveData[[x$choicesTable[1]]], {
+      shiny::observeEvent(reactiveData[[x$choicesTable[1]]], {
         choices <- choicesReactive(x, reactiveData)
         apply(x, 1,
               function(y) {
-                updateSelectizeInput(
+                shiny::updateSelectizeInput(
                   session = session,
                   inputId = y["ids"],
                   choices = c(All = "All", choices[[y["ids"]]]),

@@ -7,6 +7,8 @@
 dtModuleUI(id, filterData = NULL)
 }
 \arguments{
+\item{id}{character name for the namespace of the module}
+
 \item{filterData}{hello}
 }
 \description{

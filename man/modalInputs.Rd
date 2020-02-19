@@ -49,8 +49,6 @@ HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)}
 
 \item{session}{These parameters are handled by
 \code{\link[shiny]{callModule}} and can be ignored.}
-
-\item{ns}{namespace function passed from the calling environment.}
 }
 \description{
 Takes a \code{data.frame} containing information about shiny inputs and

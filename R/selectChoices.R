@@ -1,6 +1,6 @@
 #' Create reactive for select/selectize input choices
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
 choicesReactive <- function(inputData, reactiveData, staticChoices = NULL) {

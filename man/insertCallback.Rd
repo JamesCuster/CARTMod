@@ -11,6 +11,43 @@ insertCallback(
   session = shiny::getDefaultReactiveDomain()
 )
 }
+\arguments{
+\item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
+  type, choicesTable, choicesValues, choicesLabels} which correspond to
+  \describe{
+    \item{\code{ids}}{The field names in the database. These ids will also be
+    used as the inputId for shiny inputs.}
+
+    \item{\code{labels}}{These are character values which will be used as the
+    label for shiny inputs and be displayed above the input in the UI.}
+
+    \item{\code{type}}{The type of shiny input to be used.}
+
+    \item{\code{choicesTable, choicesValues, choicesLabels}}{Only used if the
+    desired input has predefined choices
+    (\code{\link[shiny:selectInput]{selectInput/selectizeInput})}. If neither
+    of these inputs are used, then the values should be \code{NA}. If one of
+    these inputs is used then:
+      \describe{
+        \item{\code{choicesTable}}{Is the table in the database where the
+        choices for the given input are.}
+        \item{\code{choicesValues}}{Is the column in the table which stores
+        the numeric identifier for the choice}
+        \item{\code{choicesLabels}}{Is the column in the table which stores
+        the character name for the choices}
+      }
+    }
+  }}
+
+\item{db}{a \code{\link[DBI:DBIConnection-class]{DBIConnection}} object, as
+returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
+database connection is saved to.}
+
+\item{dbTable}{The database table the new data will be added to.}
+
+\item{session}{These parameters are handled by
+\code{\link[shiny]{callModule}} and can be ignored.}
+}
 \description{
 \code{insertCallback} takes shiny input values supplied by the user, collects
 them into a \code{data.frame} and then appends them into a database

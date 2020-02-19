@@ -3,7 +3,7 @@
 #' \code{insertCallback} takes shiny input values supplied by the user, collects
 #' them into a \code{data.frame} and then appends them into a database
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
 #'

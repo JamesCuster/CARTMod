@@ -15,5 +15,6 @@ LazyData: true
 Imports: 
     shiny,
     DBI,
-    DT
+    DT,
+    shinyjs
 RoxygenNote: 7.0.1

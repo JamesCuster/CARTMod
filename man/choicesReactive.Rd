@@ -6,6 +6,40 @@
 \usage{
 choicesReactive(inputData, reactiveData, staticChoices = NULL)
 }
+\arguments{
+\item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
+  type, choicesTable, choicesValues, choicesLabels} which correspond to
+  \describe{
+    \item{\code{ids}}{The field names in the database. These ids will also be
+    used as the inputId for shiny inputs.}
+
+    \item{\code{labels}}{These are character values which will be used as the
+    label for shiny inputs and be displayed above the input in the UI.}
+
+    \item{\code{type}}{The type of shiny input to be used.}
+
+    \item{\code{choicesTable, choicesValues, choicesLabels}}{Only used if the
+    desired input has predefined choices
+    (\code{\link[shiny:selectInput]{selectInput/selectizeInput})}. If neither
+    of these inputs are used, then the values should be \code{NA}. If one of
+    these inputs is used then:
+      \describe{
+        \item{\code{choicesTable}}{Is the table in the database where the
+        choices for the given input are.}
+        \item{\code{choicesValues}}{Is the column in the table which stores
+        the numeric identifier for the choice}
+        \item{\code{choicesLabels}}{Is the column in the table which stores
+        the character name for the choices}
+      }
+    }
+  }}
+
+\item{reactiveData}{Reactive which stores all of the tables from the database
+as seperate \code{data.frames}}
+
+\item{staticChoices}{\code{list} where choices for static selectize
+inputs are defined.}
+}
 \description{
 Create reactive for select/selectize input choices
 }

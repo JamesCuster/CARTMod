@@ -29,7 +29,9 @@ addEditUI <- function(id) {
   ns <- shiny::NS(id)
 
   list(
-    shiny::actionButton(inputId = ns("add"), label = "Add")
+    shinyjs::useShinyjs(),
+    shiny::actionButton(inputId = ns("add"), label = "Add"),
+    shiny::actionButton(inputId = ns("edit"), label = "Edit")
   )
 }
 
@@ -247,7 +249,6 @@ checkDuplicateFunction <-
 #' additional optional parameters to create list of shiny inputs to be displayed
 #' in a modal
 #'
-#' @param ns namespace function passed from the calling environment.
 #' @inheritParams addEdit
 #' @param values Optional argument to be used when the inputs are being
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
