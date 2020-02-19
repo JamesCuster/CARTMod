@@ -252,7 +252,7 @@ editModal <- function(input, output, session, inputData, reactiveData,
   choices <- choicesReactive(inputData, reactiveData, staticChoices)
   values <- shiny::reactive({
     selectedRow <- dtRow()
-    reactiveData$flowers[selectedRow, ]
+    reactiveData[[dbTable]][selectedRow, ]
   })
   output$modalUI <- shiny::renderUI({modalUI(choices = choices, values = values)})
 
