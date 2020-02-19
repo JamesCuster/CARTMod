@@ -8,22 +8,25 @@ addEdit(
   input,
   output,
   session,
-  modalTitle,
+  addTitle,
+  editTitle,
   modalUI,
   inputData,
   reactiveData,
   staticChoices = NULL,
   checkDuplicate = NULL,
   db,
-  dbTable
+  dbTable,
+  dtRow
 )
 }
 \arguments{
 \item{input, output, session}{These parameters are handled by
 \code{\link[shiny]{callModule}} and can be ignored.}
 
-\item{modalTitle}{Character string for title to be displayed at the top of
-the modal.}
+\item{addTitle}{Title to display at the top of the add Modal}
+
+\item{editTitle}{Title to display at the top of the edit Modal}
 
 \item{modalUI}{Function that creates the modal UI.}
 
@@ -69,6 +72,8 @@ returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 database connection is saved to.}
 
 \item{dbTable}{The database table the new data will be added to.}
+
+\item{dtRow}{Reactive which stores the row selected in the datatable}
 }
 \value{
 Shiny \code{\link[shiny]{observeEvent}}'s which control actions when

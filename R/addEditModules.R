@@ -44,8 +44,6 @@ addEditUI <- function(id) {
 #'
 #' @param input,output,session These parameters are handled by
 #'   \code{\link[shiny]{callModule}} and can be ignored.
-#' @param modalTitle Character string for title to be displayed at the top of
-#'   the modal.
 #' @param modalUI Function that creates the modal UI.
 #' @param inputData a \code{data.frame} containing columns \code{ids, labels,
 #'   type, choicesTable, choicesValues, choicesLabels} which correspond to
@@ -84,6 +82,9 @@ addEditUI <- function(id) {
 #'   returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 #'   database connection is saved to.
 #' @param dbTable The database table the new data will be added to.
+#' @param addTitle Title to display at the top of the add Modal
+#' @param editTitle Title to display at the top of the edit Modal
+#' @param dtRow Reactive which stores the row selected in the datatable
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
@@ -91,9 +92,9 @@ addEditUI <- function(id) {
 #' @seealso \code{\link{addEditUI}}
 #'
 #' @export
-addEdit <- function(input, output, session, modalTitle, modalUI, inputData,
-                      reactiveData, staticChoices = NULL, checkDuplicate = NULL,
-                      db, dbTable) {
+addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputData,
+                    reactiveData, staticChoices = NULL, checkDuplicate = NULL,
+                    db, dbTable, dtRow) {
   # Currently modulUI is a function provided by user that creates the UI for the
   # modal. I will want to modify this so that it can be a function, or a list of
   # UI components. I don't know if this will actually be possible since it may
@@ -102,7 +103,7 @@ addEdit <- function(input, output, session, modalTitle, modalUI, inputData,
   # call addModal
   shiny::callModule(
     addModal,
-    id = "modal",
+    id = "addModal",
     inputData,
     reactiveData,
     checkDuplicate,
@@ -114,7 +115,33 @@ addEdit <- function(input, output, session, modalTitle, modalUI, inputData,
 
   # Controls what happens when add is pressed
   shiny::observeEvent(input$add, {
-    addModalUI(session$ns("modal"), modalTitle = modalTitle)
+    addModalUI(session$ns("modal"), addTitle = addTitle)
+  })
+
+
+
+  # Call editModal
+  # enable/disable edit button if datatable row is selected
+  shiny::observe({
+    shinyjs::toggleState("edit", condition = !(is.null(dtRow()) || dtRow() == ""))
+  })
+
+  # call modalModule
+  shiny::callModule(
+    editModal,
+    id = "editModal",
+    inputData,
+    reactiveData,
+    checkDuplicate,
+    db,
+    dbTable,
+    modalUI,
+    staticChoices,
+    dtRow = dtRow
+  )
+
+  shiny::observeEvent(input$edit, {
+    editModalUI(session$ns("editModal"), editTitle = editTitle)
   })
 }
 
@@ -128,13 +155,13 @@ addEdit <- function(input, output, session, modalTitle, modalUI, inputData,
 #' @inheritParams addEdit
 #'
 #' @export
-addModalUI <- function(id, modalTitle) {
+addModalUI <- function(id, addTitle) {
   ns <- shiny::NS(id)
 
   # Generate and display modal
   shiny::showModal(
     shiny::modalDialog(
-      title = modalTitle,
+      title = addTitle,
       shiny::uiOutput(ns("modalUI")),
       footer =
         list(

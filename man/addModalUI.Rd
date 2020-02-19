@@ -4,13 +4,12 @@
 \alias{addModalUI}
 \title{Create Modal: UI function}
 \usage{
-addModalUI(id, modalTitle)
+addModalUI(id, addTitle)
 }
 \arguments{
 \item{id}{character name for the namespace of the module}
 
-\item{modalTitle}{Character string for title to be displayed at the top of
-the modal.}
+\item{addTitle}{Title to display at the top of the add Modal}
 }
 \description{
 This function and \code{\link{addModal}} are used in conjunction to create
