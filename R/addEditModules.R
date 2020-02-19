@@ -146,7 +146,7 @@ addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputD
 }
 
 
-#' Create Modal: UI function
+#' Create Add Modal: UI function
 #'
 #' This function and \code{\link{addModal}} are used in conjunction to create
 #' the UI and server elements necessary to control the modal
@@ -173,7 +173,7 @@ addModalUI <- function(id, addTitle) {
 }
 
 
-#' Create Modal: server function
+#' Create Add Modal: server function
 #'
 #' This function and \code{\link{addModalUI}} are used in conjunction to
 #' create the UI and server elements necessary to control the modal
@@ -207,6 +207,63 @@ addModal <- function(input, output, session, inputData, reactiveData,
     shiny::removeModal()
   })
 }
+
+
+
+#' Create Edit Modal: UI function
+#'
+#' This function and \code{\link{editModal}} are used in conjunction to create
+#' the UI and server elements necessary to control the modal
+#'
+#' @param id character name for the namespace of the module
+#' @inheritParams addEdit
+#'
+#' @export
+editModalUI <- function(id, editTitle) {
+  ns <- shiny::NS(id)
+
+  # Generate and display modal
+  shiny::showModal(
+    shiny::modalDialog(
+      title = editTitle,
+      shiny::uiOutput(ns("modalUI")),
+      footer =
+        list(
+          shiny::modalButton("Cancel"),
+          shiny::actionButton(ns("update"), "Update")
+        )
+    )
+  )
+}
+
+
+
+#' Create Add Modal: server function
+#'
+#' This function and \code{\link{addModalUI}} are used in conjunction to
+#' create the UI and server elements necessary to control the modal
+#'
+#' @inheritParams addEdit
+#'
+#' @export
+editModal <- function(input, output, session, inputData, reactiveData,
+                      checkDuplicate, db, dbTable, modalUI, staticChoices, dtRow) {
+  # Get select(ize) choices and input values of selected row then build modalUI
+  choices <- choicesReactive(inputData, reactiveData, staticChoices)
+  values <- shinny::reactive({
+    selectedRow <- dtRow()
+    reactiveData$flowers[selectedRow, ]
+  })
+  output$modalUI <- shiny::renderUI({modalUI(choices = choices, values = values)})
+
+  # Controls what happens when Update is pressed
+  shiny::observeEvent(input$update, {
+    updateCallback(inputData, db, dbTable, dtRow)
+    shiny::removeModal()
+  })
+}
+
+
 
 
 #' Check for duplicated entries before addition
