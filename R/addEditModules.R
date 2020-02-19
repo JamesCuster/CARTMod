@@ -1,6 +1,6 @@
 #' Add database entry button: UI function
 #'
-#' This function and \code{\link{addModule}} are used in conjunction to add the
+#' This function and \code{\link{addEdit}} are used in conjunction to add the
 #' UI and server elements necessary to add a row to a given table in a database
 #'
 #' @param id character name for the namespace of the module
@@ -8,13 +8,13 @@
 #' @return A shiny \code{\link[shiny]{actionButton}} which opens a modal to
 #'   allow user to input data to be added to a database
 #'
-#' @seealso \code{\link{addModule}}
+#' @seealso \code{\link{addEdit}}
 #'
 #' @examples
 #' if (interactive()) {
 #'   library(shiny)
 #'   ui <- fluidPage(
-#'     addModuleUI("data")
+#'     addEditUI("data")
 #'   )
 #'
 #'   server <- function(input, output, session) {
@@ -25,7 +25,7 @@
 #' }
 #'
 #' @export
-addModuleUI <- function(id) {
+addEditUI <- function(id) {
   ns <- shiny::NS(id)
 
   list(
@@ -37,7 +37,7 @@ addModuleUI <- function(id) {
 
 #' Add database entry button: server function
 #'
-#' This function and \link{addModuleUI} are used in conjection to add the UI and
+#' This function and \link{addEditUI} are used in conjection to add the UI and
 #' server elements necessary to add a row to a given table in a database
 #'
 #' @param input,output,session These parameters are handled by
@@ -86,10 +86,10 @@ addModuleUI <- function(id) {
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
 #'
-#' @seealso \code{\link{addModuleUI}}
+#' @seealso \code{\link{addEditUI}}
 #'
 #' @export
-addModule <- function(input, output, session, modalTitle, modalUI, inputData,
+addEdit <- function(input, output, session, modalTitle, modalUI, inputData,
                       reactiveData, staticChoices = NULL, checkDuplicate = NULL,
                       db, dbTable) {
   # Currently modulUI is a function provided by user that creates the UI for the
@@ -123,7 +123,7 @@ addModule <- function(input, output, session, modalTitle, modalUI, inputData,
 #' the UI and server elements necessary to control the modal
 #'
 #' @param id character name for the namespace of the module
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
 addModalUI <- function(id, modalTitle) {
@@ -149,7 +149,7 @@ addModalUI <- function(id, modalTitle) {
 #' This function and \code{\link{addModalUI}} are used in conjunction to
 #' create the UI and server elements necessary to control the modal
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
 addModal <- function(input, output, session, inputData, reactiveData,
@@ -185,7 +185,7 @@ addModal <- function(input, output, session, inputData, reactiveData,
 #' This function takes a character vector of fields to check in the database for
 #' a possible duplication before an addition occurs
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
 checkDuplicateFunction <-
@@ -248,7 +248,7 @@ checkDuplicateFunction <-
 #' in a modal
 #'
 #' @param ns namespace function passed from the calling environment.
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #' @param values Optional argument to be used when the inputs are being
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
 #'   HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)
