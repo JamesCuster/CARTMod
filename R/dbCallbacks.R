@@ -74,8 +74,10 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow, session 
                     input[[x]]
                   }
                 })
-    new <- stats::setNames(new, ids)
-    new <- as.data.frame(new, stringsAsFactors = FALSE)
+  # Remove '.' from variable names
+  ids2 <- gsub("\\.", "", ids)
+  new <- stats::setNames(new, ids2)
+  new <- as.data.frame(new, stringsAsFactors = FALSE)
 
   # creates update statement with named matching for values
   upStatement <-
@@ -83,7 +85,7 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow, session 
       "update ",
       dbTable,
       " set ",
-      paste0("'", ids[!ids == idVar], "'= $", ids[!ids == idVar], collapse = ", "),
+      paste0("'", ids[!ids == idVar], "'= $", ids2[!ids2 == idVar], collapse = ", "),
       " where ",
       idVar,
       "= $",
