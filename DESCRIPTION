@@ -16,5 +16,6 @@ Imports:
     shiny,
     DBI,
     DT,
-    shinyjs
+    shinyjs,
+    methods
 RoxygenNote: 7.0.1

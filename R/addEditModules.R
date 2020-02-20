@@ -265,6 +265,31 @@ editModal <- function(input, output, session, inputData, reactiveData,
 
 
 
+#' Call modalUI function
+#'
+#' This function wraps around the the modalUI argument to call the function
+#' withing the modal server functions
+#'
+#' @inheritParams addEdit
+#' @param ... Additional parameters to mass to modalUI
+#'
+#'list(
+#'   selectizeInput(ns("Species"), "Species", choices = reactiveData$flowers$flowerName),
+#'   selectizeInput(ns("smell"), "Smell", choices = irisStaticChoices$smell)
+#')
+callModalUI <- function(modalUI, ..., session = shiny::getDefaultReactiveDomain()) {
+  ns <- session$ns
+  if (!is.function(modalUI)) {
+    stop("modalUI argument must be a function.")
+  }
+  if (!("ns" %in% methods::formalArgs(modalUI))) {
+    stop("ns must be an argument for modalUI.")
+  }
+  modalUI(ns = ns, ...)
+}
+
+
+
 
 #' Check for duplicated entries before addition
 #'
