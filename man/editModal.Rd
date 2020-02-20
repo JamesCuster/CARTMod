@@ -15,7 +15,8 @@ editModal(
   dbTable,
   modalUI,
   staticChoices,
-  dtRow
+  dtRow,
+  ...
 )
 }
 \arguments{
@@ -74,6 +75,8 @@ database connection is saved to.}
 inputs are defined.}
 
 \item{dtRow}{Reactive which stores the row selected in the datatable}
+
+\item{...}{Additional parameters to mass to modalUI function}
 }
 \description{
 This function and \code{\link{addModalUI}} are used in conjunction to

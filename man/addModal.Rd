@@ -14,7 +14,8 @@ addModal(
   db,
   dbTable,
   modalUI,
-  staticChoices
+  staticChoices,
+  ...
 )
 }
 \arguments{
@@ -71,6 +72,8 @@ database connection is saved to.}
 
 \item{staticChoices}{\code{list} where choices for static selectize
 inputs are defined.}
+
+\item{...}{Additional parameters to mass to modalUI function}
 }
 \description{
 This function and \code{\link{addModalUI}} are used in conjunction to
