@@ -113,18 +113,21 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
 #'
 #' @export
 dtFilterUpdates <- function(input, output, session, filterData, reactiveData) {
+
   filtersList <- split(filterData, filterData$choicesTable)
   lapply(
     filtersList,
     function(x) {
+
       shiny::observeEvent(reactiveData[[x$choicesTable[1]]], {
         choices <- choicesReactive(x, reactiveData)
         apply(x, 1,
               function(y) {
+
                 shiny::updateSelectizeInput(
                   session = session,
                   inputId = y["ids"],
-                  choices = c(All = "All", choices[[y["ids"]]]),
+                  choices = c(All = "All", choices()[[y["ids"]]]),
                   selected = input[[y["ids"]]]
                 )
               }
