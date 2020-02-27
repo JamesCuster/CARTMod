@@ -37,7 +37,7 @@ dtModuleUI <- function(id) {
 #'
 #' @export
 dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL,
-                      staticChoices) {
+                      staticChoices = NULL) {
   # Build filter UI
   choices <- choicesReactive(inputData = filterData,
                              reactiveData = reactiveData,
@@ -95,15 +95,28 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
 
   # Data reactive to filter data
   dtData <- shiny::reactive({
-    # Get filters ids
-    shiny::req(input[["speciesFilter"]], input[["smellFilter"]])
+    # Grab data frame
     df <- reactiveData[[dbTable]]
 
-    # apply filters
-    for (i in 1:nrow(filterData)) {
-      df <- apply(filterData[i, ], 1, applyFilters, .data = df, input = input)
-      df <- as.data.frame(df, col.names = "")
+    if (!is.null(filterData)) {
+      # Check filter inputs have been created
+      shiny::req(
+        unlist(
+          lapply(filterData[, 1], function(x) input[[x]])
+        )
+      )
+      # shiny::req(input[["speciesFilter"]], input[["smellFilter"]])
+
+
+      # apply filters
+      if (!is.null(filterData)) {
+        for (i in 1:nrow(filterData)) {
+          df <- apply(filterData[i, ], 1, applyFilters, .data = df, input = input)
+          df <- as.data.frame(df, col.names = "")
+        }
+      }
     }
+
 
     # This handles the clearing of input[["dt_rows_selected"]] when the selected
     # row does not exist in the filtered data
@@ -141,7 +154,6 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
       server = TRUE
     )
 }
-
 
 
 #' Apply filters to data displayed in dtModule

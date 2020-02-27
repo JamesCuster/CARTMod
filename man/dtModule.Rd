@@ -11,7 +11,7 @@ dtModule(
   reactiveData,
   dbTable,
   filterData = NULL,
-  staticChoices
+  staticChoices = NULL
 )
 }
 \arguments{
