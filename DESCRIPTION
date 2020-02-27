@@ -17,5 +17,6 @@ Imports:
     DBI,
     DT,
     shinyjs,
-    methods
+    methods,
+    dplyr
 RoxygenNote: 7.0.1

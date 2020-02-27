@@ -29,7 +29,6 @@ dtModuleUI <- function(id) {
 
 
 
-
 #' Create and display datatable: server function
 #'
 #' @inheritParams addEdit
@@ -145,7 +144,19 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
 
 
 
-
+#' Apply filters to data displayed in dtModule
+#'
+#' @param .data the dataframe to be filtered and displayed in the dtModule
+#' @param x a data frame row from filterData data.frame.
+#' @inheritParams dtModule
+#'
+#' @export
+applyFilters <- function(.data, x, input) {
+    if (input[[x[["ids"]]]] != "All") {
+      dplyr::filter(.data, eval(parse(text = x[["filterColumnIds"]])) == input[[x[["ids"]]]])
+    }
+    else {.data}
+}
 
 
 
