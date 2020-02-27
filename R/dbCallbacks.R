@@ -7,8 +7,8 @@
 #'
 #' @export
 #'
-insertCallback <-
-  function(inputData, db, dbTable, session = shiny::getDefaultReactiveDomain()) {
+insertCallback <- function(inputData, db, dbTable,
+                           session = shiny::getDefaultReactiveDomain()) {
     input <- session$input
     ids <- inputData$ids
   # Creates data.frame of field values for new entry
@@ -68,7 +68,8 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow,
                       as.character(input[[x]])
                     }
                   }
-                  else if (is.null(input[[x]]) || length(input[[x]]) == 0 || input[[x]] == "") {
+                  else if (is.null(input[[x]]) || length(input[[x]]) == 0 ||
+                           input[[x]] == "") {
                     NA
                   }
                   else {
@@ -86,7 +87,8 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow,
       "update ",
       dbTable,
       " set ",
-      paste0("'", ids[!ids == idVar], "'= $", ids2[!ids2 == idVar], collapse = ", "),
+      paste0("'", ids[!ids == idVar], "'= $", ids2[!ids2 == idVar],
+             collapse = ", "),
       " where ",
       idVar,
       "= $",

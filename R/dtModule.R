@@ -36,8 +36,8 @@ dtModuleUI <- function(id) {
 #' @param filterData hello!
 #'
 #' @export
-dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL,
-                      staticChoices = NULL) {
+dtModule <- function(input, output, session, reactiveData, dbTable,
+                     filterData = NULL, staticChoices = NULL) {
   # Build filter UI
   choices <- choicesReactive(inputData = filterData,
                              reactiveData = reactiveData,
@@ -82,14 +82,16 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
   # preserving/clearing the selected row depending on whether the selection is
   # present in the filtered data.
   selected <- NULL
-  shiny::observeEvent(c(input$dt_rows_selected, is.null(input$dt_rows_selected)), {
+  shiny::observeEvent(c(input$dt_rows_selected,
+                        is.null(input$dt_rows_selected)), {
     selected <<- input$dt_rows_selected
-    getSelectedRowIDMessage <-
+    getRowsSelectedIDMessage <-
       list(
         session$ns("dt_rows_selected_identifier"),
         dtData()[input$dt_rows_selected, 1]
       )
-    session$sendCustomMessage("getSelectedRowID", getSelectedRowIDMessage)
+    session$sendCustomMessage("getSelectedRowID",
+                              getRowsSelectedIDMessage)
   })
 
 
@@ -105,13 +107,12 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
           lapply(filterData[, 1], function(x) input[[x]])
         )
       )
-      # shiny::req(input[["speciesFilter"]], input[["smellFilter"]])
-
 
       # apply filters
       if (!is.null(filterData)) {
-        for (i in 1:nrow(filterData)) {
-          df <- apply(filterData[i, ], 1, applyFilters, .data = df, input = input)
+        for (i in seq_len(nrow(filterData))) {
+          df <-
+            apply(filterData[i, ], 1, applyFilters, df = df, input = input)
           df <- as.data.frame(df, col.names = "")
         }
       }
@@ -122,17 +123,18 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
     # row does not exist in the filtered data
     if (!is.null(shiny::isolate(input[["dt_rows_selected_identifier"]])) &&
         shiny::isolate(input[["dt_rows_selected_identifier"]]) %in% df[, 1]) {
-      selected <<- which(df[, 1] == shiny::isolate(input[["dt_rows_selected_identifier"]]))
+      selected <<-
+        which(df[, 1] == shiny::isolate(input[["dt_rows_selected_identifier"]]))
     }
     else {
       selected <<- NULL
     }
-    dt_rows_selected_message <-
+    dtRowsSelectedMessage <-
       list(
         session$ns("dt_rows_selected"),
         selected
       )
-    session$sendCustomMessage("dt_rows_selected", dt_rows_selected_message)
+    session$sendCustomMessage("dt_rows_selected", dtRowsSelectedMessage)
     return(df)
   })
 
@@ -158,45 +160,21 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
 
 #' Apply filters to data displayed in dtModule
 #'
-#' @param .data the dataframe to be filtered and displayed in the dtModule
+#' @param df the dataframe to be filtered and displayed in the dtModule
 #' @param x a data frame row from filterData data.frame.
 #' @inheritParams dtModule
 #'
 #' @export
-applyFilters <- function(.data, x, input) {
+applyFilters <- function(df, x, input) {
     if (input[[x[["ids"]]]] != "All") {
-      dplyr::filter(.data, eval(parse(text = x[["filterColumnIds"]])) == input[[x[["ids"]]]])
+      dplyr::filter(df, eval(parse(text = x[["filterColumnIds"]])) ==
+                      input[[x[["ids"]]]])
     }
-    else {.data}
+    else {
+      df
+    }
 }
 
-
-
-
-# # Alternative approach to dtModule function. Kept as comment just in case it
-# # is needed for future development
-# dtModule <- function(input, output, session, dbTable) {
-#   output$dt <-
-#     renderDataTable(
-#       datatable(
-#         dbTable(),
-#         selection = list(
-#           mode = "single",
-#           selected = input[[paste0(session$ns("dt"), "_rows_selected")]]
-#         ),
-#         rownames = FALSE,
-#         options = list(
-#           dom = '<"top"fl> t <"bottom"ip>',
-#           rowId = "researcherID",
-#           order = list(0, "desc")
-#         )
-#       ),
-#       server = TRUE
-#     )
-# }
-#
-# callModule(dtModule, "iris",
-#            dbTable = reactive(reactiveData$iris))
 
 
 #' Update filter choices

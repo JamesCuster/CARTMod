@@ -92,9 +92,9 @@ addEditUI <- function(id) {
 #' @seealso \code{\link{addEditUI}}
 #'
 #' @export
-addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputData,
-                    reactiveData, staticChoices = NULL, checkDuplicate = NULL,
-                    db, dbTable, dtRow) {
+addEdit <- function(input, output, session, addTitle, editTitle, modalUI,
+                    inputData, reactiveData, staticChoices = NULL,
+                    checkDuplicate = NULL, db, dbTable, dtRow) {
   # define the choices and values reactive
   choices <- choicesReactive(inputData, reactiveData, staticChoices)
   values <- shiny::reactive({
@@ -130,7 +130,8 @@ addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputD
   # Call editModal
   # enable/disable edit button if datatable row is selected
   shiny::observe({
-    shinyjs::toggleState("edit", condition = !(is.null(dtRow()) || dtRow() == ""))
+    shinyjs::toggleState("edit",
+                         condition = !(is.null(dtRow()) || dtRow() == ""))
   })
 
   # call modalModule
@@ -192,9 +193,8 @@ addModalUI <- function(id, addTitle) {
 #'
 #' @export
 addModal <- function(input, output, session, inputData, reactiveData,
-                        checkDuplicate, db, dbTable, modalUI, staticChoices, ...) {
-  # Get select(ize) choices and build modalUI
-  # choices <- choicesReactive(inputData, reactiveData, staticChoices)
+                     checkDuplicate, db, dbTable, modalUI, staticChoices, ...) {
+  # Build add modal UI
   output$modalUI <- shiny::renderUI(callModalUI(modalUI, ...))
 
   # Controls what happens when Save is pressed
@@ -257,14 +257,10 @@ editModalUI <- function(id, editTitle) {
 #' @param ... Additional parameters to mass to modalUI function
 #'
 #' @export
-editModal <- function(input, output, session, inputData, reactiveData,
-                      checkDuplicate, db, dbTable, modalUI, staticChoices, dtRow, ...) {
-  # Get select(ize) choices and input values of selected row then build modalUI
-  # choices <- choicesReactive(inputData, reactiveData, staticChoices)
-  # values <- shiny::reactive({
-  #   selectedRow <- dtRow()
-  #   reactiveData[[dbTable]][selectedRow, ]
-  # })
+editModal <-
+  function(input, output, session, inputData, reactiveData, checkDuplicate, db,
+           dbTable, modalUI, staticChoices, dtRow, ...) {
+  # Build edit modal UI
   output$modalUI <- shiny::renderUI(callModalUI(modalUI, ...))
 
   # Controls what happens when Update is pressed
@@ -285,10 +281,12 @@ editModal <- function(input, output, session, inputData, reactiveData,
 #' @param ... Additional parameters to mass to modalUI function
 #'
 #'list(
-#'   selectizeInput(ns("Species"), "Species", choices = reactiveData$flowers$flowerName),
+#'   selectizeInput(ns("Species"), "Species",
+#'                  choices = reactiveData$flowers$flowerName),
 #'   selectizeInput(ns("smell"), "Smell", choices = irisStaticChoices$smell)
 #')
-callModalUI <- function(modalUI, ..., session = shiny::getDefaultReactiveDomain()) {
+callModalUI <- function(modalUI, ...,
+                        session = shiny::getDefaultReactiveDomain()) {
   ns <- session$ns
   if (!is.function(modalUI)) {
     stop("modalUI argument must be a function.")
