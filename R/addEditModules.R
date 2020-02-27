@@ -98,8 +98,7 @@ addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputD
   # define the choices and values reactive
   choices <- choicesReactive(inputData, reactiveData, staticChoices)
   values <- shiny::reactive({
-    selectedRow <- dtRow()
-    reactiveData[[dbTable]][selectedRow, ]
+    reactiveData[[dbTable]][reactiveData[[dbTable]][, 1] == dtRow(), ]
   })
 
   # Currently modulUI is a function provided by user that creates the UI for the
