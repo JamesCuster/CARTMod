@@ -1,4 +1,4 @@
-#' Add reactive datatable: UI function
+#' Create and display datatable: UI function
 #'
 #' @inheritParams addEditUI
 #'
@@ -29,25 +29,106 @@ dtModuleUI <- function(id) {
 
 
 
-#' Add reactive datatable: server function
+
+#' Create and display datatable: server function
 #'
 #' @inheritParams addEdit
 #' @inheritParams dtModuleUI
 #' @param filterData hello!
 #'
 #' @export
-dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL) {
-  # used to presreve selected row on reloads if row is selected
+dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL,
+                      staticChoices) {
+  # Build filter UI
+  choices <- choicesReactive(inputData = filterData,
+                             reactiveData = reactiveData,
+                             staticChoices = staticChoices)
+
+  output$dtFilters <- shiny::renderUI({
+    ns <- session$ns
+    # Create filter inputs if they exists
+    if (!is.null(filterData)) {
+      filters <-
+        apply(
+          filterData, 1,
+          function(x) {
+            if (x["ids"] == filterData$ids[1]) {
+              style <- NULL
+            } else {
+              style <- "margin-left: 20px;"
+            }
+            shiny::div(
+              shiny::selectizeInput(
+                inputId = ns(x["ids"]),
+                label = x["labels"],
+                choices = c("All", choices()[[x["ids"]]])
+              ),
+              style = style
+            )
+          }
+        )
+    } else {
+      filters <- NULL
+    }
+    shiny::div(
+      filters,
+      style = "display: flex; align-items: flex-start;"
+    )
+  })
+
+  # Used to presreve selected row on reloads if row is selected as well as
+  # create the input that stores the table row identifier of the selected row to
+  # be passed to other modules.
+  # note: There is functionality inthe dtData reactive that allows for
+  # preserving/clearing the selected row depending on whether the selection is
+  # present in the filtered data.
   selected <- NULL
-  shiny::observeEvent(input$dt_rows_selected, {
+  shiny::observeEvent(c(input$dt_rows_selected, is.null(input$dt_rows_selected)), {
     selected <<- input$dt_rows_selected
+    getSelectedRowIDMessage <-
+      list(
+        session$ns("dt_rows_selected_identifier"),
+        dtData()[input$dt_rows_selected, 1]
+      )
+    session$sendCustomMessage("getSelectedRowID", getSelectedRowIDMessage)
+  })
+
+
+  # Data reactive to filter data
+  dtData <- shiny::reactive({
+    # Get filters ids
+    shiny::req(input[["speciesFilter"]], input[["smellFilter"]])
+    df <- reactiveData[[dbTable]]
+
+    # apply filters
+    for (i in 1:nrow(filterData)) {
+      df <- apply(filterData[i, ], 1, applyFilters, .data = df, input = input)
+      df <- as.data.frame(df, col.names = "")
+    }
+
+    # This handles the clearing of input[["dt_rows_selected"]] when the selected
+    # row does not exist in the filtered data
+    if (!is.null(shiny::isolate(input[["dt_rows_selected_identifier"]])) &&
+        shiny::isolate(input[["dt_rows_selected_identifier"]]) %in% df[, 1]) {
+      selected <<- which(df[, 1] == shiny::isolate(input[["dt_rows_selected_identifier"]]))
+    }
+    else {
+      selected <<- NULL
+    }
+    dt_rows_selected_message <-
+      list(
+        session$ns("dt_rows_selected"),
+        selected
+      )
+    session$sendCustomMessage("dt_rows_selected", dt_rows_selected_message)
+    return(df)
   })
 
   # Creates the datatable
   output$dt <-
     DT::renderDataTable(
       DT::datatable(
-        reactiveData[[dbTable]],
+        dtData(),
         selection = list(
           mode = "single",
           selected = selected
@@ -60,11 +141,13 @@ dtModule <- function(input, output, session, reactiveData, dbTable, filterData =
       ),
       server = TRUE
     )
-
-  if (!is.null(filterData)) {
-    dtFilterUpdates(input, output, session, filterData = filterData, reactiveData = reactiveData)
-  }
 }
+
+
+
+
+
+
 
 
 # # Alternative approach to dtModule function. Kept as comment just in case it

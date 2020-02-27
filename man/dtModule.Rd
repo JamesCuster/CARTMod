@@ -2,9 +2,17 @@
 % Please edit documentation in R/dtModule.R
 \name{dtModule}
 \alias{dtModule}
-\title{Add reactive datatable: server function}
+\title{Create and display datatable: server function}
 \usage{
-dtModule(input, output, session, reactiveData, dbTable, filterData = NULL)
+dtModule(
+  input,
+  output,
+  session,
+  reactiveData,
+  dbTable,
+  filterData = NULL,
+  staticChoices
+)
 }
 \arguments{
 \item{input}{These parameters are handled by
@@ -22,7 +30,10 @@ as seperate \code{data.frames}}
 \item{dbTable}{The database table the new data will be added to.}
 
 \item{filterData}{hello!}
+
+\item{staticChoices}{\code{list} where choices for static selectize
+inputs are defined.}
 }
 \description{
-Add reactive datatable: server function
+Create and display datatable: server function
 }
