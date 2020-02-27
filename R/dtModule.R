@@ -1,42 +1,28 @@
 #' Add reactive datatable: UI function
 #'
 #' @inheritParams addEditUI
-#' @param filterData hello
 #'
 #' @export
-dtModuleUI <- function(id, filterData = NULL) {
+dtModuleUI <- function(id) {
   ns <- shiny::NS(id)
 
-  # Create filter inputs if they exists
-  if (!is.null(filterData)) {
-    filters <-
-      apply(
-        filterData, 1,
-        function(x) {
-          if (x["ids"] == filterData$ids[1]) {
-            style <- NULL
-          } else {
-            style <- "margin-left: 20px;"
-          }
-          shiny::div(
-            shiny::selectizeInput(
-              inputId = ns(x["ids"]),
-              label = x["labels"],
-              choices = "All"
-            ),
-            style = style
-          )
-        }
-      )
-  } else {
-    filters <- NULL
-  }
-
   list(
-    shiny::div(
-      filters,
-      style = "display: flex; align-items: flex-start;"
-    ),
+    # JS to handle setting the row identifier for selected row in DT as an input
+    # value to be passed to the edit function so that the correct row is used to
+    # populate the edit modal
+    shiny::tags$script("
+      Shiny.addCustomMessageHandler('getSelectedRowID', function(value) {
+      Shiny.setInputValue(value[0], value[1]);
+      });
+    "),
+    # JS to preserve or remove selected row after filter depending on if
+    # selected row is in filtered data
+    shiny::tags$script("
+      Shiny.addCustomMessageHandler('dt_rows_selected', function(value) {
+      Shiny.setInputValue(value[0], value[1]);
+      });
+    "),
+    shiny::uiOutput(ns("dtFilters")),
     DT::dataTableOutput(ns("dt"))
   )
 }
@@ -47,6 +33,7 @@ dtModuleUI <- function(id, filterData = NULL) {
 #'
 #' @inheritParams addEdit
 #' @inheritParams dtModuleUI
+#' @param filterData hello!
 #'
 #' @export
 dtModule <- function(input, output, session, reactiveData, dbTable, filterData = NULL) {

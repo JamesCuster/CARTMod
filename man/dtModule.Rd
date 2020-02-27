@@ -21,7 +21,7 @@ as seperate \code{data.frames}}
 
 \item{dbTable}{The database table the new data will be added to.}
 
-\item{filterData}{hello}
+\item{filterData}{hello!}
 }
 \description{
 Add reactive datatable: server function
