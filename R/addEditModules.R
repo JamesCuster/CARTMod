@@ -1,6 +1,6 @@
 #' Add database entry button: UI function
 #'
-#' This function and \code{\link{addModule}} are used in conjunction to add the
+#' This function and \code{\link{addEdit}} are used in conjunction to add the
 #' UI and server elements necessary to add a row to a given table in a database
 #'
 #' @param id character name for the namespace of the module
@@ -8,13 +8,13 @@
 #' @return A shiny \code{\link[shiny]{actionButton}} which opens a modal to
 #'   allow user to input data to be added to a database
 #'
-#' @seealso \code{\link{addModule}}
+#' @seealso \code{\link{addEdit}}
 #'
 #' @examples
 #' if (interactive()) {
 #'   library(shiny)
 #'   ui <- fluidPage(
-#'     addModuleUI("data")
+#'     addEditUI("data")
 #'   )
 #'
 #'   server <- function(input, output, session) {
@@ -25,11 +25,13 @@
 #' }
 #'
 #' @export
-addModuleUI <- function(id) {
+addEditUI <- function(id) {
   ns <- shiny::NS(id)
 
   list(
-    shiny::actionButton(inputId = ns("add"), label = "Add")
+    shinyjs::useShinyjs(),
+    shiny::actionButton(inputId = ns("add"), label = "Add"),
+    shiny::actionButton(inputId = ns("edit"), label = "Edit")
   )
 }
 
@@ -37,13 +39,11 @@ addModuleUI <- function(id) {
 
 #' Add database entry button: server function
 #'
-#' This function and \link{addModuleUI} are used in conjection to add the UI and
+#' This function and \link{addEditUI} are used in conjection to add the UI and
 #' server elements necessary to add a row to a given table in a database
 #'
 #' @param input,output,session These parameters are handled by
 #'   \code{\link[shiny]{callModule}} and can be ignored.
-#' @param modalTitle Character string for title to be displayed at the top of
-#'   the modal.
 #' @param modalUI Function that creates the modal UI.
 #' @param inputData a \code{data.frame} containing columns \code{ids, labels,
 #'   type, choicesTable, choicesValues, choicesLabels} which correspond to
@@ -82,57 +82,95 @@ addModuleUI <- function(id) {
 #'   returned by \code{\link[DBI]{dbConnect}}. In other words, the object the
 #'   database connection is saved to.
 #' @param dbTable The database table the new data will be added to.
+#' @param addTitle Title to display at the top of the add Modal
+#' @param editTitle Title to display at the top of the edit Modal
+#' @param dtRow Reactive which stores the row selected in the datatable
 #'
 #' @return Shiny \code{\link[shiny]{observeEvent}}'s which control actions when
 #'   the add button is pressed, as well as the save button in the modal.
 #'
-#' @seealso \code{\link{addModuleUI}}
+#' @seealso \code{\link{addEditUI}}
 #'
 #' @export
-addModule <- function(input, output, session, modalTitle, modalUI, inputData,
-                      reactiveData, staticChoices = NULL, checkDuplicate = NULL,
-                      db, dbTable) {
+addEdit <- function(input, output, session, addTitle, editTitle, modalUI, inputData,
+                    reactiveData, staticChoices = NULL, checkDuplicate = NULL,
+                    db, dbTable, dtRow) {
+  # define the choices and values reactive
+  choices <- choicesReactive(inputData, reactiveData, staticChoices)
+  values <- shiny::reactive({
+    reactiveData[[dbTable]][reactiveData[[dbTable]][, 1] == dtRow(), ]
+  })
+
   # Currently modulUI is a function provided by user that creates the UI for the
   # modal. I will want to modify this so that it can be a function, or a list of
   # UI components. I don't know if this will actually be possible since it may
   # cause some namespace naming issues.
 
-  # call modalModule
+  # call addModal
   shiny::callModule(
-    modalModule,
-    id = "modal",
+    addModal,
+    id = "addModal",
     inputData,
     reactiveData,
     checkDuplicate,
     db,
     dbTable,
     modalUI,
-    staticChoices
+    staticChoices,
+    choices = choices
   )
 
   # Controls what happens when add is pressed
   shiny::observeEvent(input$add, {
-    modalModuleUI(session$ns("modal"), modalTitle = modalTitle)
+    addModalUI(session$ns("addModal"), addTitle = addTitle)
+  })
+
+
+
+  # Call editModal
+  # enable/disable edit button if datatable row is selected
+  shiny::observe({
+    shinyjs::toggleState("edit", condition = !(is.null(dtRow()) || dtRow() == ""))
+  })
+
+  # call modalModule
+  shiny::callModule(
+    editModal,
+    id = "editModal",
+    inputData,
+    reactiveData,
+    checkDuplicate,
+    db,
+    dbTable,
+    modalUI,
+    staticChoices,
+    dtRow = dtRow,
+    choices = choices,
+    values = values
+  )
+
+  shiny::observeEvent(input$edit, {
+    editModalUI(session$ns("editModal"), editTitle = editTitle)
   })
 }
 
 
-#' Create Modal: UI function
+#' Create Add Modal: UI function
 #'
-#' This function and \code{\link{modalModule}} are used in conjunction to create
+#' This function and \code{\link{addModal}} are used in conjunction to create
 #' the UI and server elements necessary to control the modal
 #'
 #' @param id character name for the namespace of the module
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
-modalModuleUI <- function(id, modalTitle) {
+addModalUI <- function(id, addTitle) {
   ns <- shiny::NS(id)
 
   # Generate and display modal
   shiny::showModal(
     shiny::modalDialog(
-      title = modalTitle,
+      title = addTitle,
       shiny::uiOutput(ns("modalUI")),
       footer =
         list(
@@ -144,19 +182,20 @@ modalModuleUI <- function(id, modalTitle) {
 }
 
 
-#' Create Modal: server function
+#' Create Add Modal: server function
 #'
-#' This function and \code{\link{modalModuleUI}} are used in conjunction to
+#' This function and \code{\link{addModalUI}} are used in conjunction to
 #' create the UI and server elements necessary to control the modal
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
+#' @param ... Additional parameters to mass to modalUI function
 #'
 #' @export
-modalModule <- function(input, output, session, inputData, reactiveData,
-                        checkDuplicate, db, dbTable, modalUI, staticChoices) {
+addModal <- function(input, output, session, inputData, reactiveData,
+                        checkDuplicate, db, dbTable, modalUI, staticChoices, ...) {
   # Get select(ize) choices and build modalUI
-  choices <- choicesReactive(inputData, reactiveData, staticChoices)
-  output$modalUI <- shiny::renderUI(modalUI(choices = choices))
+  # choices <- choicesReactive(inputData, reactiveData, staticChoices)
+  output$modalUI <- shiny::renderUI(callModalUI(modalUI, ...))
 
   # Controls what happens when Save is pressed
   shiny::observeEvent(input$insert, {
@@ -180,12 +219,95 @@ modalModule <- function(input, output, session, inputData, reactiveData,
 }
 
 
+
+#' Create Edit Modal: UI function
+#'
+#' This function and \code{\link{editModal}} are used in conjunction to create
+#' the UI and server elements necessary to control the modal
+#'
+#' @param id character name for the namespace of the module
+#' @inheritParams addEdit
+#'
+#' @export
+editModalUI <- function(id, editTitle) {
+  ns <- shiny::NS(id)
+
+  # Generate and display modal
+  shiny::showModal(
+    shiny::modalDialog(
+      title = editTitle,
+      shiny::uiOutput(ns("modalUI")),
+      footer =
+        list(
+          shiny::modalButton("Cancel"),
+          shiny::actionButton(ns("update"), "Update")
+        )
+    )
+  )
+}
+
+
+
+#' Create Add Modal: server function
+#'
+#' This function and \code{\link{addModalUI}} are used in conjunction to
+#' create the UI and server elements necessary to control the modal
+#'
+#' @inheritParams addEdit
+#' @param ... Additional parameters to mass to modalUI function
+#'
+#' @export
+editModal <- function(input, output, session, inputData, reactiveData,
+                      checkDuplicate, db, dbTable, modalUI, staticChoices, dtRow, ...) {
+  # Get select(ize) choices and input values of selected row then build modalUI
+  # choices <- choicesReactive(inputData, reactiveData, staticChoices)
+  # values <- shiny::reactive({
+  #   selectedRow <- dtRow()
+  #   reactiveData[[dbTable]][selectedRow, ]
+  # })
+  output$modalUI <- shiny::renderUI(callModalUI(modalUI, ...))
+
+  # Controls what happens when Update is pressed
+  shiny::observeEvent(input$update, {
+    updateCallback(inputData, db, dbTable, reactiveData, dtRow)
+    shiny::removeModal()
+  })
+}
+
+
+
+#' Call modalUI function
+#'
+#' This function wraps around the the modalUI argument to call the function
+#' withing the modal server functions
+#'
+#' @inheritParams addEdit
+#' @param ... Additional parameters to mass to modalUI function
+#'
+#'list(
+#'   selectizeInput(ns("Species"), "Species", choices = reactiveData$flowers$flowerName),
+#'   selectizeInput(ns("smell"), "Smell", choices = irisStaticChoices$smell)
+#')
+callModalUI <- function(modalUI, ..., session = shiny::getDefaultReactiveDomain()) {
+  ns <- session$ns
+  if (!is.function(modalUI)) {
+    stop("modalUI argument must be a function.")
+  }
+  if (!("ns" %in% methods::formalArgs(modalUI))) {
+    stop("ns must be an argument for the modalUI function.")
+  }
+  modalUI(ns = ns, ...)
+}
+
+
+
+
 #' Check for duplicated entries before addition
 #'
 #' This function takes a character vector of fields to check in the database for
 #' a possible duplication before an addition occurs
 #'
-#' @inheritParams addModule
+#' @inheritParams addEdit
 #'
 #' @export
 checkDuplicateFunction <-
@@ -247,8 +369,8 @@ checkDuplicateFunction <-
 #' additional optional parameters to create list of shiny inputs to be displayed
 #' in a modal
 #'
-#' @param ns namespace function passed from the calling environment.
-#' @inheritParams addModule
+#' @inheritParams addEdit
+#' @param ns namespace function passed from calling environment
 #' @param values Optional argument to be used when the inputs are being
 #'   populated from an observation in the database. (NEED MORE DOCUMENTATION
 #'   HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)
@@ -257,9 +379,8 @@ checkDuplicateFunction <-
 #'   \code{\link[shiny:selectInput]{selectizeInput}} inputs.
 #'
 #' @export
-modalInputs <- function(inputData, values, choices,
+modalInputs <- function(ns = ns, inputData, values, choices,
                         session = shiny::getDefaultReactiveDomain()) {
-  ns <- session$ns
   inputData <- inputData[inputData$type != "skip", ]
   fields <-
     apply(

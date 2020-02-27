@@ -5,6 +5,7 @@
 \title{Create list of shiny inputs for modal}
 \usage{
 modalInputs(
+  ns = ns,
   inputData,
   values,
   choices,
@@ -12,6 +13,8 @@ modalInputs(
 )
 }
 \arguments{
+\item{ns}{namespace function passed from calling environment}
+
 \item{inputData}{a \code{data.frame} containing columns \code{ids, labels,
   type, choicesTable, choicesValues, choicesLabels} which correspond to
   \describe{
@@ -49,8 +52,6 @@ HERE ONCE THE EDIT FUNCTIONALITY IS BUILT OUT)}
 
 \item{session}{These parameters are handled by
 \code{\link[shiny]{callModule}} and can be ignored.}
-
-\item{ns}{namespace function passed from the calling environment.}
 }
 \description{
 Takes a \code{data.frame} containing information about shiny inputs and

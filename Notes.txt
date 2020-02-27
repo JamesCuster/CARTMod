@@ -1,8 +1,0 @@
-CARTMod Notes
-
-Where I last left off
-
-addModule was implemented in for projects in CART.
-
-Next steps would be...
-To add the addModule to the time functionality of CART.
