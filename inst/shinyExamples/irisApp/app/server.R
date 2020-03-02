@@ -1,16 +1,6 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
-library(shiny)
-
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
+
   # 1.1 Monitor Database ------------------------------------------------------
   monitorDatabase <-
     reactivePoll(
@@ -21,7 +11,7 @@ shinyServer(function(input, output, session) {
           collect() %>%
           as.data.frame(stringsAsfactors = FALSE)
         if (as.POSIXct(modified$modified) <
-              as.POSIXct(modifiedCurrent$modified)) {
+            as.POSIXct(modifiedCurrent$modified)) {
           modified <<- modifiedCurrent
           return(TRUE)
         } else {
@@ -38,20 +28,32 @@ shinyServer(function(input, output, session) {
     monitorDatabase()
   })
 
+
+
+
   # iris --------------------------------------------------------------------
-  irisUI <- function(ns, choices = NULL) {
-    # Both options below work, which is what I wanted.
-    modalInputs(ns,
-                inputData = irisInputs,
-                choices = choices())
-    # list(
-    #   selectizeInput(ns("Species"), "Species",
-    #                  choices = reactiveData$flowers$flowerName),
-    #   selectizeInput(ns("smell"), "Smell", choices = irisStaticChoices$smell)
-    # )
+
+  irisUI <- function(ns, choices = NULL, values = NULL,
+                     session = getDefaultReactiveDomain()) {
+    if (is.null(values)) {
+      modalInputs(ns = ns,
+                  inputData = irisInputs,
+                  choices = choices())
+    }
+    else {
+      modalInputs2(ns = ns,
+                   inputData = irisInputs,
+                   choices = choices(),
+                   values = values())
+    }
   }
-  callModule(addModule, "iris",
-             modalTitle = "Add Iris",
+
+
+
+  callModule(addEdit, "iris",
+             dtRow = reactive(input[["iris-dt_rows_selected_identifier"]]),
+             addTitle = "Add Iris",
+             editTitle = "Edit Iris",
              modalUI = irisUI,
              inputData = irisInputs,
              reactiveData = reactiveData,
@@ -59,28 +61,41 @@ shinyServer(function(input, output, session) {
              dbTable = "iris",
              db = irisdb)
 
+
   callModule(dtModule, "iris",
              reactiveData,
-             dbTable = "iris")
+             dbTable = "iris",
+             filterData = irisFilters,
+             staticChoices = irisStaticChoices)
 
 
 
   # Flowers -----------------------------------------------------------------
-  flowersUI <- function(ns, choices = NULL) {
-    modalInputs(ns,
-                inputData = flowerInputs,
-                choices = choices)
+  flowersUI <- function(ns, choices = NULL, values = NULL,
+                        session = getDefaultReactiveDomain()) {
+    if (is.null(values)) {
+      modalInputs(ns = ns,
+                  inputData = flowerInputs,
+                  choices = choices())
+    }
+    else {
+      modalInputs2(ns = ns,
+                   inputData = flowerInputs,
+                   choices = choices(),
+                   values = values())
+    }
   }
 
-  callModule(addModule, "flowers",
-             modalTitle = "Add Flowers",
+  callModule(addEdit, "flowers",
+             dtRow = reactive(input[["flowers-dt_rows_selected_identifier"]]),
+             addTitle = "Add Flowers",
+             editTitle = "Edit Flowers",
              modalUI = flowersUI,
              inputData = flowerInputs,
              reactiveData = reactiveData,
-             checkDuplicate = c("flowerName"),
+             checkDuplicate = c("flowerName", "flowerName2"),
              dbTable = "flowers",
              db = irisdb)
-
 
   callModule(dtModule, "flowers",
              reactiveData,
