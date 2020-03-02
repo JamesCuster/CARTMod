@@ -7,8 +7,8 @@
 #'
 #' @export
 #'
-insertCallback <-
-  function(inputData, db, dbTable, session = shiny::getDefaultReactiveDomain()) {
+insertCallback <- function(inputData, db, dbTable,
+                           session = shiny::getDefaultReactiveDomain()) {
     input <- session$input
     ids <- inputData$ids
   # Creates data.frame of field values for new entry
@@ -49,7 +49,8 @@ insertCallback <-
 #'
 #' @export
 #'
-updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow, session = shiny::getDefaultReactiveDomain()) {
+updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow,
+                           session = shiny::getDefaultReactiveDomain()) {
   input <- session$input
   ids <- inputData$ids
   idVar <- inputData[1, 1]
@@ -57,7 +58,7 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow, session 
   new <- lapply(ids,
                 function(x) {
                   if (x == idVar) {
-                    reactiveData[[dbTable]][dtRow(), idVar]
+                    dtRow()
                   }
                   else if (class(input[[x]]) == "Date") {
                     if (length(input[[x]]) == 0) {
@@ -67,7 +68,8 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow, session 
                       as.character(input[[x]])
                     }
                   }
-                  else if (is.null(input[[x]]) || length(input[[x]]) == 0 || input[[x]] == "") {
+                  else if (is.null(input[[x]]) || length(input[[x]]) == 0 ||
+                           input[[x]] == "") {
                     NA
                   }
                   else {
@@ -85,7 +87,8 @@ updateCallback <- function(inputData, db, dbTable, reactiveData, dtRow, session 
       "update ",
       dbTable,
       " set ",
-      paste0("'", ids[!ids == idVar], "'= $", ids2[!ids2 == idVar], collapse = ", "),
+      paste0("'", ids[!ids == idVar], "'= $", ids2[!ids2 == idVar],
+             collapse = ", "),
       " where ",
       idVar,
       "= $",

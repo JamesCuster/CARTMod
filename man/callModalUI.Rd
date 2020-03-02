@@ -12,7 +12,8 @@ callModalUI(modalUI, ..., session = shiny::getDefaultReactiveDomain())
 \item{...}{Additional parameters to mass to modalUI function
 
 list(
-  selectizeInput(ns("Species"), "Species", choices = reactiveData$flowers$flowerName),
+  selectizeInput(ns("Species"), "Species",
+                 choices = reactiveData$flowers$flowerName),
   selectizeInput(ns("smell"), "Smell", choices = irisStaticChoices$smell)
 )}
 
