@@ -4,10 +4,10 @@
 \alias{applyFilters}
 \title{Apply filters to data displayed in dtModule}
 \usage{
-applyFilters(.data, x, input)
+applyFilters(df, x, input)
 }
 \arguments{
-\item{.data}{the dataframe to be filtered and displayed in the dtModule}
+\item{df}{the dataframe to be filtered and displayed in the dtModule}
 
 \item{x}{a data frame row from filterData data.frame.}
 

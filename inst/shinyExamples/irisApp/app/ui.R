@@ -1,4 +1,3 @@
-# Define UI for application that draws a histogram
 shinyUI(
   fluidPage(
     tabsetPanel(
@@ -6,19 +5,19 @@ shinyUI(
       tabPanel(
         "Iris",
 
-        # Add button
-        addModuleUI("iris"),
+        # Add edit Iris
+        addEditUI("iris"),
 
         # Datatable
         dtModuleUI("iris")
       ),
 
-      # flowers
+      # flowers ----------------------------------------------------------------
       tabPanel(
         "Flowers",
 
-        # Add button
-        addModuleUI("flowers"),
+        # Add edit flowers
+        addEditUI("flowers"),
 
         # Datatable
         dtModuleUI("flowers")
